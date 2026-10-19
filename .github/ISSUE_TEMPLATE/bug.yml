@@ -1,0 +1,66 @@
+name: Bug report
+description: Something in Fluval does not work as described.
+labels: ["bug"]
+body:
+  - type: input
+    id: ha_version
+    attributes:
+      label: Home Assistant version
+      placeholder: "2026.10.1"
+    validations:
+      required: true
+  - type: input
+    id: fluval_version
+    attributes:
+      label: Fluval integration version
+      description: Settings > Devices & services > Fluval Aquarium LED, or HACS.
+      placeholder: "26.10.3"
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Light model and product ID
+      description: The model is shown on the device page. The product ID is in the diagnostics under "product" (for example 547 for the Reef Nano 4.0).
+      placeholder: "Fluval Plant 4.0 LED, 545"
+    validations:
+      required: true
+  - type: dropdown
+    id: connection
+    attributes:
+      label: Bluetooth connection
+      options:
+        - ESPHome Bluetooth proxy
+        - Local Bluetooth adapter
+        - Both
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. ...\n2. ...\n3. ..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happens instead
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: Settings > Devices & services > Fluval Aquarium LED > three dots > Download diagnostics. MAC address and advertisement data are redacted. Drag the file here.
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else
+      description: Debug log lines (logger custom_components.fluvalble set to debug), whether the FluvalConnect app was connected at the same time.

@@ -1,0 +1,60 @@
+set_channels:
+  target:
+    entity:
+      integration: fluvalble
+      domain: light
+  fields:
+    pink: &pct
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+    cyan: *pct
+    blue: *pct
+    purple: *pct
+    cold_white: *pct
+    pure_white: *pct
+    warm_white: *pct
+    transition:
+      selector:
+        number:
+          min: 0
+          max: 21600
+          unit_of_measurement: s
+get_programs:
+  target:
+    entity:
+      integration: fluvalble
+      domain: light
+
+set_timed_effects:
+  target:
+    entity:
+      integration: fluvalble
+      domain: light
+  fields:
+    windows:
+      required: true
+      example: '[{"start": "21:30", "end": "22:00", "effect": "crescent_moon", "weekdays": ["mon","tue","wed","thu","fri","sat","sun"]}]'
+      selector:
+        object:
+
+set_pro_program:
+  target:
+    entity:
+      integration: fluvalble
+      domain: light
+  fields:
+    points:
+      required: true
+      example: >-
+        [{"time": "09:00"}, {"time": "10:00", "pink": 22, "cyan": 77, "blue": 100, "purple": 66, "cold_white": 44},
+        {"time": "19:40", "pink": 22, "cyan": 77, "blue": 100, "purple": 66, "cold_white": 44},
+        {"time": "20:00", "blue": 25, "purple": 10}, {"time": "22:00"}]
+      selector:
+        object:
+    activate:
+      default: true
+      selector:
+        boolean:

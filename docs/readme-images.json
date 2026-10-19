@@ -1,0 +1,202 @@
+{
+  "$comment": "Content of the README pictures. Cards: node sh1ft-w.github.io/theme/v1/readme-images/render.mjs <this repo> cards. The README title image is docs/images/readme-title.webp, a finished AI-generated composition (free to use), used unchanged; the title block here is not used. docs/images/stage-photo.jpg is the photo part of it for the website hero.",
+  "title": {
+    "name": "Fluval",
+    "eyebrow": "For Home Assistant",
+    "lead": "Your aquarium light, <em>fully local.</em>",
+    "sub": "Fluval LED lights in Home Assistant: every channel as a slider, real colour, effects, modes and a light that holds what you set. No cloud.",
+    "pills": [
+      [
+        "Local, no cloud"
+      ],
+      [
+        "Platinum"
+      ],
+      [
+        "HACS"
+      ]
+    ],
+    "logo": "docs/images/readme-icon.png",
+    "shot": {
+      "light": "docs/images/stage-photo.jpg",
+      "dark": "docs/images/stage-photo.jpg",
+      "srcW": 1240,
+      "winW": 1240,
+      "s": 0.64,
+      "strips": [
+        [
+          0,
+          1000
+        ]
+      ],
+      "bar": null,
+      "left": 560,
+      "top": 0,
+      "flat": true
+    }
+  },
+  "colors": {
+    "light": {
+      "bg": "#F4F7F8",
+      "bg2": "#E6EEF0",
+      "ink": "#0E1418",
+      "ink2": "#4A5760",
+      "ink3": "#7E8B93",
+      "accentText": "#0A6FA8",
+      "accent": "#0A8FD0",
+      "accent2": "#2BB3E8",
+      "glow1": "rgba(43,179,232,0.16)",
+      "glow2": "rgba(10,111,168,0.10)",
+      "frame": "rgba(10,25,35,0.10)",
+      "pillBg": "#ffffff",
+      "pillLine": "rgba(10,25,35,0.08)",
+      "win": "#0B2A4A",
+      "bar": ""
+    },
+    "dark": {
+      "bg": "#070C10",
+      "bg2": "#0C151B",
+      "ink": "#ECF3F6",
+      "ink2": "rgba(216,230,236,0.84)",
+      "ink3": "rgba(216,230,236,0.52)",
+      "accentText": "#6CC6F2",
+      "accent": "#3FB3EC",
+      "accent2": "#2BB3E8",
+      "glow1": "rgba(108,198,242,0.18)",
+      "glow2": "rgba(10,90,150,0.16)",
+      "frame": "rgba(255,255,255,0.10)",
+      "pillBg": "rgba(255,255,255,0.06)",
+      "pillLine": "rgba(255,255,255,0.10)",
+      "win": "#0B2A4A",
+      "bar": ""
+    }
+  },
+  "fonts": {
+    "display": "\"Archivo\", -apple-system, system-ui, sans-serif",
+    "body": "\"Inter\", -apple-system, system-ui, sans-serif",
+    "mono": "\"JetBrains Mono\", ui-monospace, Menlo, monospace",
+    "google": "https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap"
+  },
+  "cards": {
+    "new": [
+      {
+        "icon": "lightbulb-group-outline",
+        "title": "More Fluval lights",
+        "ver": "26.10.3",
+        "text": "Reef 4.0, Plant 4.0, Plant Nano 4.0, Plant PRO, Siena 2.0 and A-Sky Aqua join the Reef Nano 4.0. The model comes from the Bluetooth advertisement."
+      },
+      {
+        "icon": "palette-outline",
+        "title": "Plant channels and colours",
+        "ver": "26.10.3",
+        "text": "Plant models get Pink, Blue, Cold, Pure and Warm white, with colour mixing from their own LED spectra."
+      },
+      {
+        "icon": "signal-cellular-2",
+        "title": "Calmer signal updates",
+        "ver": "26.10.2",
+        "text": "Signal strength is written only on visible changes, odd confirmation replies are caught instead of raising errors."
+      },
+      {
+        "icon": "calendar-outline",
+        "title": "Calendar versions",
+        "ver": "26.10.1",
+        "text": "Year, month and the release of that month: 26.10.3 is the third release of October 2026."
+      }
+    ],
+    "features": [
+      {
+        "icon": "tune-vertical",
+        "title": "Every channel a slider",
+        "text": "All five LED channels from 0 to 100 %. A value above 0 switches on, all at 0 really switches off. Plus set_channels for all at once."
+      },
+      {
+        "icon": "lightbulb-on-outline",
+        "title": "An RGB light with transitions",
+        "text": "Colours are mixed from the real LED spectra of the model. Brightness keeps the mix, transition fades in gentle steps."
+      },
+      {
+        "icon": "shield-check-outline",
+        "title": "Holds what you set",
+        "text": "Late echoes, the lamp's own scene after power-on or a power cut: Home Assistant restores what it last set, at most once a minute."
+      },
+      {
+        "icon": "check-decagram-outline",
+        "title": "Honest states",
+        "text": "Values always come from the lamp. Without contact entities are unavailable, never a guessed 0 %. Commands count only once confirmed."
+      },
+      {
+        "icon": "bluetooth-connect",
+        "title": "Robust Bluetooth",
+        "text": "One queue for all commands, firm time limits, clean reconnects, backoff when the lamp is silent. Works through ESPHome proxies, with a preferred proxy."
+      },
+      {
+        "icon": "calendar-clock",
+        "title": "Programs in the lamp",
+        "text": "Read the automatic and professional program, write a professional day schedule and up to seven timed effects. They run without Home Assistant."
+      },
+      {
+        "icon": "weather-lightning",
+        "title": "Effects and weather",
+        "text": "The lamp's effects on the light card. With a weather entity, a thunderstorm outside plays lightning in the tank for a few minutes."
+      },
+      {
+        "icon": "stethoscope",
+        "title": "Diagnostics that help",
+        "text": "Reachable with proxy, signal and last error, a repair issue after 30 minutes of silence and a diagnostics download without MAC address."
+      }
+    ],
+    "entities": [
+      {
+        "icon": "lightbulb-outline",
+        "title": "Light",
+        "text": "light.<name>_light: RGB from the five channels, brightness, effects, transition. Attribute channels with the real values."
+      },
+      {
+        "icon": "tune-variant",
+        "title": "Channel numbers",
+        "text": "Reef: pink, cyan, blue, purple, cold_white. Plant: pink, blue, cold_white, pure_white, warm_white. 0 to 100 % each."
+      },
+      {
+        "icon": "form-dropdown",
+        "title": "Mode and weather",
+        "text": "mode (manual, automatic, professional), weather_effects and weather_effect_minutes."
+      },
+      {
+        "icon": "gesture-tap-button",
+        "title": "Buttons and switch",
+        "text": "identify, sync_clock and reconnect. hold_state switches restoring the desired state on and off."
+      },
+      {
+        "icon": "information-outline",
+        "title": "Sensors",
+        "text": "last_seen, source and signal_strength of the connection, timed_effects stored in the lamp."
+      },
+      {
+        "icon": "stethoscope",
+        "title": "Diagnostics",
+        "text": "reachable with the attributes gatt_connected, source, rssi and last_error."
+      }
+    ],
+    "how": {
+      "cols": 3,
+      "items": [
+        {
+          "icon": "bluetooth",
+          "title": "FFF0 service",
+          "text": "Commands on FFF2, replies as notifications on FFF1, also through ESPHome Bluetooth proxies."
+        },
+        {
+          "icon": "code-braces",
+          "title": "D1 + CBOR",
+          "text": "Mode, power, channels and effects as separate frames, like the app, then a state read as confirmation."
+        },
+        {
+          "icon": "sync",
+          "title": "D2 state",
+          "text": "The full state, split over several packets and put back together, every 30 seconds and on every change."
+        }
+      ]
+    }
+  }
+}

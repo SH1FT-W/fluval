@@ -1,0 +1,262 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "bluetooth_confirm": {
+        "title": "Fluval found",
+        "description": "Set up {name}?"
+      },
+      "user": {
+        "title": "Choose lamp",
+        "description": "Supported Fluval lights that Home Assistant currently sees via Bluetooth.",
+        "data": {
+          "mac": "Lamp"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "This lamp is already set up.",
+      "no_devices_found": "No supported Fluval light found. Close the Fluval app (the light allows only one connection) and try again.",
+      "not_supported": "This Fluval light is not supported (only the current Bluetooth generation, see README)."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Settings",
+        "data": {
+          "keep_connected": "Keep connected",
+          "weather_entity": "Weather for effects from weather",
+          "preferred_proxy": "Preferred proxy"
+        },
+        "data_description": {
+          "keep_connected": "On: Home Assistant stays connected (fast, keeps the state). Off: connects only briefly, so the Fluval app can be used in between.",
+          "weather_entity": "On thunderstorms (and optionally clouds) the lamp briefly plays the matching effect and returns to its mix – at most once per hour, only while the light is on.",
+          "preferred_proxy": "First connection attempt goes through this Bluetooth proxy (signal in brackets, if it currently sees the lamp). If it does not see the lamp, has no free slot or fails, another one is used automatically; the preferred one is tried again after 30 minutes."
+        }
+      }
+    }
+  },
+  "entity": {
+    "light": {
+      "light": {
+        "name": "Light",
+        "state_attributes": {
+          "channels": {
+            "name": "Channels"
+          },
+          "effect": {
+            "state": {
+              "off": "Off",
+              "crescent_moon": "Crescent moon",
+              "partly_cloudy": "Partly cloudy",
+              "lightning": "Lightning",
+              "sun_and_lightning": "Sun and lightning"
+            }
+          }
+        }
+      }
+    },
+    "number": {
+      "pink": {
+        "name": "Pink"
+      },
+      "cyan": {
+        "name": "Cyan"
+      },
+      "blue": {
+        "name": "Blue"
+      },
+      "purple": {
+        "name": "Purple"
+      },
+      "cold_white": {
+        "name": "Cold white"
+      },
+      "pure_white": {
+        "name": "Pure white"
+      },
+      "warm_white": {
+        "name": "Warm white"
+      },
+      "weather_effect_minutes": {
+        "name": "Weather effect duration"
+      }
+    },
+    "select": {
+      "mode": {
+        "name": "Mode",
+        "state": {
+          "manual": "Manual",
+          "automatic": "Automatic",
+          "professional": "Professional"
+        }
+      },
+      "weather_effects": {
+        "name": "Effects from weather",
+        "state": {
+          "off": "Off",
+          "storm": "Thunderstorm only",
+          "storm_clouds": "Thunderstorm + clouds"
+        }
+      }
+    },
+    "switch": {
+      "hold_state": {
+        "name": "Hold state"
+      }
+    },
+    "button": {
+      "sync_clock": {
+        "name": "Sync clock"
+      },
+      "reconnect": {
+        "name": "Reconnect"
+      }
+    },
+    "binary_sensor": {
+      "reachable": {
+        "name": "Reachable",
+        "state_attributes": {
+          "gatt_connected": {
+            "name": "Connected"
+          },
+          "source": {
+            "name": "Via"
+          },
+          "last_contact": {
+            "name": "Last contact"
+          },
+          "last_error": {
+            "name": "Last error"
+          }
+        }
+      }
+    },
+    "sensor": {
+      "rssi": {
+        "name": "Signal strength"
+      },
+      "connected_since": {
+        "name": "Connected since"
+      },
+      "source": {
+        "name": "Source"
+      },
+      "timed_effects": {
+        "name": "Timed effects"
+      }
+    }
+  },
+  "services": {
+    "set_channels": {
+      "name": "Set channels",
+      "description": "Sets the LED channels in % with one command. Channels not given stay as they are. All 0 turns the lamp off, any value above 0 turns it on.",
+      "fields": {
+        "pink": {
+          "name": "Pink",
+          "description": "Pink channel"
+        },
+        "cyan": {
+          "name": "Cyan",
+          "description": "Cyan channel"
+        },
+        "blue": {
+          "name": "Blue",
+          "description": "Blue channel"
+        },
+        "purple": {
+          "name": "Purple",
+          "description": "Purple channel"
+        },
+        "cold_white": {
+          "name": "Cold white",
+          "description": "Cold white channel"
+        },
+        "pure_white": {
+          "name": "Pure white",
+          "description": "Pure white channel (Plant models)"
+        },
+        "warm_white": {
+          "name": "Warm white",
+          "description": "Warm white channel (Plant models)"
+        },
+        "transition": {
+          "name": "Transition",
+          "description": "Fade over this many seconds."
+        }
+      }
+    },
+    "get_programs": {
+      "name": "Read programs",
+      "description": "Returns the automatic and professional programs and the timed effects stored in the lamp."
+    },
+    "set_timed_effects": {
+      "name": "Set timed effects",
+      "description": "Like the app: up to 7 windows in which the lamp plays an effect by itself. Empty list = clear all.",
+      "fields": {
+        "windows": {
+          "name": "Windows",
+          "description": "List of start, end (HH:MM), effect, weekdays (mon…sun, empty = all), enabled."
+        }
+      }
+    },
+    "set_pro_program": {
+      "name": "Set professional program",
+      "description": "Writes a daily schedule (up to 12 points with time and the 5 channels) as professional program into the lamp; it fades between points itself and runs without Home Assistant.",
+      "fields": {
+        "points": {
+          "name": "Points",
+          "description": "List of time (HH:MM) and the channels of the model (0–100): Reef pink, cyan, blue, purple, cold_white; Plant pink, blue, cold_white, pure_white, warm_white. Missing channels are 0."
+        },
+        "activate": {
+          "name": "Switch to professional",
+          "description": "Switch the mode to professional afterwards."
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "command_failed": {
+      "message": "Fluval command failed: {error}"
+    },
+    "not_in_range": {
+      "message": "The Fluval lamp is not reachable by any Bluetooth adapter or proxy right now ({error}). Is the Fluval app connected?"
+    },
+    "connect_failed": {
+      "message": "Could not connect to the Fluval lamp: {error}"
+    },
+    "no_answer": {
+      "message": "The Fluval lamp did not answer: {error}"
+    },
+    "not_confirmed": {
+      "message": "The Fluval lamp did not take the command, it reports: {state}"
+    },
+    "unreachable": {
+      "message": "Fluval lamp not reachable: {error}"
+    },
+    "bad_windows": {
+      "message": "Invalid time windows: {error}"
+    },
+    "bad_points": {
+      "message": "Invalid professional program: {error}"
+    },
+    "unknown_channel": {
+      "message": "This lamp has no channel {channels}. Channels: {valid}."
+    }
+  },
+  "issues": {
+    "unreachable": {
+      "title": "{name} not reachable",
+      "description": "Home Assistant has not heard from the lamp for {minutes} minutes (last error: {error}).\n\n- Is the Fluval app open on a phone? The lamp allows only one connection.\n- Is a Bluetooth proxy near the lamp online?\n- Press **Reconnect** on the device page.\n\nThe notice disappears by itself as soon as the lamp answers again."
+    }
+  },
+  "selector": {
+    "preferred_proxy": {
+      "options": {
+        "auto": "Automatic (best signal)",
+        "missing": "not seen right now"
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+Fluval for Home Assistant
+Copyright 2026 SH1FT-W
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Predecessor and third-party material
+------------------------------------
+
+This integration succeeds the custom component MrMooreUK/fluvalble
+(https://github.com/MrMooreUK/fluvalble, Apache License 2.0, Copyright MrMooreUK
+and contributors). It keeps its domain (fluvalble), its configuration entry
+format and its unique IDs, so existing installations can switch over. The two
+integrations cannot be installed at the same time.
+
+The connection, command and state handling were written anew. The following
+parts are derived from MrMooreUK/fluvalble under the Apache License 2.0:
+
+- custom_components/fluvalble/products.py: the product table (product IDs,
+  model names, channel order) and the CIE XYZ spectrum tables, from
+  core/products.py and core/color.py.
+- custom_components/fluvalble/color.py: the colour fit (non-negative mix of at
+  most three channels in CIE XYZ), adapted from core/color.py.
+- The decoding of the product ID from the Bluetooth advertisement, from
+  core/products.py.
+
+MrMooreUK/fluvalble credits the Plant PRO Bluetooth protocol research and
+hardware validation to cryystyy
+(https://github.com/cryystyy/fluval-plant-pro-4-homeassistant, MIT License).
+No code from that project is included here; the Plant PRO entry in the product
+table comes from the MrMooreUK/fluvalble table.
+
+Protocol source
+---------------
+
+The Bluetooth protocol (FFF0 service, D1/D2 CBOR frames, clock packet, CBOR
+keys), the product IDs and the LED spectrum data come from the official
+FluvalConnect app (eu.hagen.fluvalconnect), studied for interoperability.
+No code or assets of the app are included.
+
+The Fluval logo in custom_components/fluvalble/brand/, assets/ and docs/ is
+the official logo of Fluval, used only to identify the supported devices.
+
+Trademarks
+----------
+
+Fluval is a trademark of Rolf C. Hagen Inc. This project is independent and is
+not affiliated with, endorsed by or sponsored by Rolf C. Hagen Inc.

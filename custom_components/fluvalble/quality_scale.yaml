@@ -1,0 +1,117 @@
+# Integration Quality Scale, selbst geprüft, nicht offiziell (keine Core-Integration).
+# Regeln: https://developers.home-assistant.io/docs/core/integration-quality-scale/rules
+rules:
+  # Bronze
+  action-setup:
+    status: done
+    comment: Die vier Aktionen werden in async_setup registriert, nicht pro Eintrag.
+  appropriate-polling:
+    status: done
+    comment: Verbunden alle 30 s (hält die Verbindung wach), sonst alle 5 min; Änderungen meldet die Lampe selbst per Notify.
+  brands: done
+  common-modules:
+    status: done
+    comment: DataUpdateCoordinator in coordinator.py, Bluetooth in ble.py, gemeinsame Basis in entity.py.
+  config-flow-test-coverage: done
+  config-flow: done
+  dependency-transparency:
+    status: exempt
+    comment: Keine eigenen Abhängigkeiten; Bluetooth über HAs bluetooth-Komponente (bleak, bleak-retry-connector).
+  docs-actions: done
+  docs-triggers:
+    status: exempt
+    comment: Keine eigenen Auslöser.
+  docs-conditions:
+    status: exempt
+    comment: Keine eigenen Bedingungen.
+  docs-high-level-description: done
+  docs-installation-instructions: done
+  docs-removal-instructions: done
+  entity-event-setup:
+    status: done
+    comment: CoordinatorEntity meldet sich selbst an und ab; Bluetooth-Callbacks hängen am Eintrag (async_on_unload).
+  entity-unique-id: done
+  has-entity-name: done
+  runtime-data: done
+  test-before-configure:
+    status: done
+    comment: Einrichten nur für Lampen, die HA gerade über Bluetooth sieht (Werbedaten mit Produkt-ID 547).
+  test-before-setup:
+    status: exempt
+    comment: >-
+      Bewusst nicht: die Lampe erlaubt nur eine Verbindung und wirbt nicht, solange die Fluval-App verbunden ist,
+      und Verbinden über Proxys dauert 10–40 s. Der erste Abruf läuft im Hintergrund; bis echte Werte da sind,
+      sind die Entitäten „nicht verfügbar“, nach 30 Minuten kommt ein Reparatur-Hinweis.
+  unique-config-entry:
+    status: done
+    comment: Eindeutig über die Bluetooth-MAC der Lampe.
+
+  # Silver
+  action-exceptions:
+    status: done
+    comment: Befehls- und Eingabefehler als übersetzte HomeAssistantError (coordinator.py _command/_packet).
+  config-entry-unloading: done
+  docs-configuration-parameters: done
+  docs-installation-parameters:
+    status: exempt
+    comment: Beim Einrichten wird nur die Lampe gewählt; Einstellungen gibt es erst in den Optionen.
+  entity-unavailable: done
+  integration-owner: done
+  log-when-unavailable:
+    status: done
+    comment: Der Coordinator loggt Ausfall und Rückkehr je einmal; kurze Funkstille wird überbrückt (3 bzw. 12 min).
+  parallel-updates: done
+  reauthentication-flow:
+    status: exempt
+    comment: Die Lampe verlangt keine Anmeldung.
+  test-coverage: done
+
+  # Gold
+  devices: done
+  diagnostics:
+    status: done
+    comment: MAC und Werbedaten werden geschwärzt.
+  discovery-update-info:
+    status: exempt
+    comment: Bluetooth-Gerät mit fester MAC; es gibt keine Adresse, die sich ändern könnte.
+  discovery:
+    status: done
+    comment: Bluetooth-Matcher (Name ReefNano*, Herstellerdaten FFFF) im Manifest.
+  docs-data-update: done
+  docs-examples: done
+  docs-known-limitations: done
+  docs-supported-devices: done
+  docs-supported-functions: done
+  docs-troubleshooting: done
+  docs-use-cases: done
+  dynamic-devices:
+    status: exempt
+    comment: Ein Eintrag = genau eine Lampe; es kommen keine Geräte nachträglich hinzu.
+  entity-category: done
+  entity-device-class: done
+  entity-disabled-by-default:
+    status: done
+    comment: Signalstärke (ändert sich mit jeder Werbung) ist standardmäßig aus.
+  entity-translations: done
+  exception-translations: done
+  icon-translations: done
+  reconfiguration-flow:
+    status: exempt
+    comment: >-
+      Einzige Einrichtungsangabe ist die Lampe selbst (MAC = Identität); alles Einstellbare
+      (Verbindung halten, bevorzugter Proxy, Wetter) steht im Options-Flow.
+  repair-issues:
+    status: done
+    comment: Hinweis „nicht erreichbar“ nach 30 Minuten Funkstille, verschwindet von selbst.
+  stale-devices:
+    status: exempt
+    comment: Ein Eintrag = genau eine Lampe; das Gerät verschwindet mit dem Eintrag.
+
+  # Platinum
+  async-dependency:
+    status: done
+    comment: Nur asynchrones Bluetooth über bleak/HAs bluetooth-Komponente.
+  inject-websession:
+    status: exempt
+    comment: Keine HTTP-Verbindungen.
+  strict-typing: done

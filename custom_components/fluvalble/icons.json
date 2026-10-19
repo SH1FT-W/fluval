@@ -1,0 +1,91 @@
+{
+  "entity": {
+    "light": {
+      "light": {
+        "default": "mdi:led-strip-variant"
+      }
+    },
+    "number": {
+      "pink": {
+        "default": "mdi:brightness-percent"
+      },
+      "cyan": {
+        "default": "mdi:brightness-percent"
+      },
+      "blue": {
+        "default": "mdi:brightness-percent"
+      },
+      "purple": {
+        "default": "mdi:brightness-percent"
+      },
+      "cold_white": {
+        "default": "mdi:brightness-percent"
+      },
+      "weather_effect_minutes": {
+        "default": "mdi:timer-outline"
+      }
+    },
+    "select": {
+      "mode": {
+        "default": "mdi:tune",
+        "state": {
+          "manual": "mdi:hand-back-right",
+          "automatic": "mdi:calendar-clock",
+          "professional": "mdi:chart-bell-curve-cumulative"
+        }
+      },
+      "weather_effects": {
+        "default": "mdi:weather-lightning"
+      }
+    },
+    "switch": {
+      "hold_state": {
+        "default": "mdi:lock-check-outline",
+        "state": {
+          "off": "mdi:lock-open-variant-outline"
+        }
+      }
+    },
+    "button": {
+      "sync_clock": {
+        "default": "mdi:clock-check-outline"
+      },
+      "reconnect": {
+        "default": "mdi:bluetooth-connect"
+      }
+    },
+    "binary_sensor": {
+      "reachable": {
+        "default": "mdi:bluetooth-connect",
+        "state": {
+          "off": "mdi:bluetooth-off"
+        }
+      }
+    },
+    "sensor": {
+      "connected_since": {
+        "default": "mdi:timer-outline"
+      },
+      "source": {
+        "default": "mdi:bluetooth"
+      },
+      "timed_effects": {
+        "default": "mdi:weather-lightning"
+      }
+    }
+  },
+  "services": {
+    "set_channels": {
+      "service": "mdi:tune-vertical"
+    },
+    "get_programs": {
+      "service": "mdi:calendar-text"
+    },
+    "set_timed_effects": {
+      "service": "mdi:calendar-clock"
+    },
+    "set_pro_program": {
+      "service": "mdi:chart-timeline-variant"
+    }
+  }
+}

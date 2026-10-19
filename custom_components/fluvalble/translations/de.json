@@ -1,0 +1,262 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "bluetooth_confirm": {
+        "title": "Fluval gefunden",
+        "description": "{name} einrichten?"
+      },
+      "user": {
+        "title": "Lampe wählen",
+        "description": "Unterstützte Fluval-Lampen, die Home Assistant gerade über Bluetooth sieht.",
+        "data": {
+          "mac": "Lampe"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Diese Lampe ist schon eingerichtet.",
+      "no_devices_found": "Keine unterstützte Fluval-Lampe gefunden. Fluval-App schließen (die Lampe erlaubt nur eine Verbindung) und erneut versuchen.",
+      "not_supported": "Diese Fluval-Lampe wird nicht unterstützt (nur die aktuelle Bluetooth-Generation, siehe README)."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Einstellungen",
+        "data": {
+          "keep_connected": "Verbindung halten",
+          "weather_entity": "Wetter für „Effekte nach Wetter“",
+          "preferred_proxy": "Bevorzugter Proxy"
+        },
+        "data_description": {
+          "keep_connected": "An: Home Assistant bleibt verbunden (schnell, hält den Zustand). Aus: verbindet nur kurz, damit zwischendurch die Fluval-App geht.",
+          "weather_entity": "Bei Gewitter (und auf Wunsch bei Wolken) spielt die Lampe kurz den passenden Effekt und kehrt dann zur Mischung zurück – höchstens einmal pro Stunde, nur wenn das Licht an ist.",
+          "preferred_proxy": "Der erste Verbindungsversuch läuft über diesen Bluetooth-Proxy (in Klammern das Signal, falls er die Lampe gerade sieht). Sieht er sie nicht, hat er keinen freien Platz oder scheitert er, wird automatisch ein anderer genommen; der bevorzugte wird nach 30 Minuten wieder versucht."
+        }
+      }
+    }
+  },
+  "entity": {
+    "light": {
+      "light": {
+        "name": "Licht",
+        "state_attributes": {
+          "channels": {
+            "name": "Kanäle"
+          },
+          "effect": {
+            "state": {
+              "off": "Aus",
+              "crescent_moon": "Mondsichel",
+              "partly_cloudy": "Teilweise bewölkt",
+              "lightning": "Blitze",
+              "sun_and_lightning": "Sonne und Blitze"
+            }
+          }
+        }
+      }
+    },
+    "number": {
+      "pink": {
+        "name": "Pink"
+      },
+      "cyan": {
+        "name": "Cyan"
+      },
+      "blue": {
+        "name": "Blau"
+      },
+      "purple": {
+        "name": "Violett"
+      },
+      "cold_white": {
+        "name": "Kaltweiß"
+      },
+      "pure_white": {
+        "name": "Reinweiß"
+      },
+      "warm_white": {
+        "name": "Warmweiß"
+      },
+      "weather_effect_minutes": {
+        "name": "Wetter-Effekt Dauer"
+      }
+    },
+    "select": {
+      "mode": {
+        "name": "Modus",
+        "state": {
+          "manual": "Manuell",
+          "automatic": "Automatik",
+          "professional": "Profi"
+        }
+      },
+      "weather_effects": {
+        "name": "Effekte nach Wetter",
+        "state": {
+          "off": "Aus",
+          "storm": "Nur Gewitter",
+          "storm_clouds": "Gewitter + Wolken"
+        }
+      }
+    },
+    "switch": {
+      "hold_state": {
+        "name": "Zustand halten"
+      }
+    },
+    "button": {
+      "sync_clock": {
+        "name": "Uhr stellen"
+      },
+      "reconnect": {
+        "name": "Neu verbinden"
+      }
+    },
+    "binary_sensor": {
+      "reachable": {
+        "name": "Erreichbar",
+        "state_attributes": {
+          "gatt_connected": {
+            "name": "Verbunden"
+          },
+          "source": {
+            "name": "Über"
+          },
+          "last_contact": {
+            "name": "Letzte Meldung"
+          },
+          "last_error": {
+            "name": "Letzter Fehler"
+          }
+        }
+      }
+    },
+    "sensor": {
+      "rssi": {
+        "name": "Signalstärke"
+      },
+      "connected_since": {
+        "name": "Verbunden seit"
+      },
+      "source": {
+        "name": "Verbunden über"
+      },
+      "timed_effects": {
+        "name": "Zeitgesteuerte Effekte"
+      }
+    }
+  },
+  "services": {
+    "set_channels": {
+      "name": "Kanäle setzen",
+      "description": "Setzt die LED-Kanäle in % mit einem Befehl. Nicht genannte Kanäle bleiben. Alle 0 schaltet aus, ein Wert über 0 schaltet ein.",
+      "fields": {
+        "pink": {
+          "name": "Pink",
+          "description": "Kanal Pink"
+        },
+        "cyan": {
+          "name": "Cyan",
+          "description": "Kanal Cyan"
+        },
+        "blue": {
+          "name": "Blau",
+          "description": "Kanal Blau"
+        },
+        "purple": {
+          "name": "Violett",
+          "description": "Kanal Violett"
+        },
+        "cold_white": {
+          "name": "Kaltweiß",
+          "description": "Kanal Kaltweiß"
+        },
+        "pure_white": {
+          "name": "Reinweiß",
+          "description": "Kanal Reinweiß (Plant-Modelle)"
+        },
+        "warm_white": {
+          "name": "Warmweiß",
+          "description": "Kanal Warmweiß (Plant-Modelle)"
+        },
+        "transition": {
+          "name": "Übergang",
+          "description": "So viele Sekunden weich überblenden."
+        }
+      }
+    },
+    "get_programs": {
+      "name": "Programme lesen",
+      "description": "Liefert Automatik- und Profi-Programm und die zeitgesteuerten Effekte, die in der Lampe gespeichert sind."
+    },
+    "set_timed_effects": {
+      "name": "Zeitgesteuerte Effekte setzen",
+      "description": "Wie in der App: bis zu 7 Zeitfenster, in denen die Lampe selbst einen Effekt abspielt. Leere Liste = alle löschen.",
+      "fields": {
+        "windows": {
+          "name": "Zeitfenster",
+          "description": "Liste mit start, end (HH:MM), effect (crescent_moon, partly_cloudy, lightning, sun_and_lightning), weekdays (mon…sun, leer = alle), enabled."
+        }
+      }
+    },
+    "set_pro_program": {
+      "name": "Profi-Programm setzen",
+      "description": "Schreibt einen Tagesablauf (bis zu 12 Stützpunkte mit Uhrzeit und den 5 Kanälen) als Profi-Programm in die Lampe – sie blendet dazwischen selbst über und läuft auch ohne Home Assistant.",
+      "fields": {
+        "points": {
+          "name": "Stützpunkte",
+          "description": "Liste mit time (HH:MM) und den Kanälen des Modells (0–100): Reef pink, cyan, blue, purple, cold_white; Plant pink, blue, cold_white, pure_white, warm_white. Fehlende Kanäle sind 0."
+        },
+        "activate": {
+          "name": "Profi-Modus einschalten",
+          "description": "Danach gleich auf „professional“ umschalten."
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "command_failed": {
+      "message": "Fluval-Befehl gescheitert: {error}"
+    },
+    "not_in_range": {
+      "message": "Die Fluval-Lampe ist gerade von keinem Bluetooth-Adapter oder Proxy erreichbar ({error}). Ist die Fluval-App verbunden?"
+    },
+    "connect_failed": {
+      "message": "Verbindung zur Fluval-Lampe gescheitert: {error}"
+    },
+    "no_answer": {
+      "message": "Die Fluval-Lampe hat nicht geantwortet: {error}"
+    },
+    "not_confirmed": {
+      "message": "Die Fluval-Lampe hat den Befehl nicht übernommen, sie meldet: {state}"
+    },
+    "unreachable": {
+      "message": "Fluval-Lampe nicht erreichbar: {error}"
+    },
+    "bad_windows": {
+      "message": "Ungültige Zeitfenster: {error}"
+    },
+    "bad_points": {
+      "message": "Ungültiges Profi-Programm: {error}"
+    },
+    "unknown_channel": {
+      "message": "Diese Lampe hat keinen Kanal {channels}. Kanäle: {valid}."
+    }
+  },
+  "issues": {
+    "unreachable": {
+      "title": "{name} nicht erreichbar",
+      "description": "Home Assistant hat seit {minutes} Minuten nichts von der Lampe gehört (letzter Fehler: {error}).\n\n- Ist die Fluval-App auf einem Handy offen? Die Lampe erlaubt nur eine Verbindung.\n- Ist ein Bluetooth-Proxy in der Nähe der Lampe online?\n- Auf der Geräteseite **Neu verbinden** drücken.\n\nDer Hinweis verschwindet von selbst, sobald die Lampe wieder antwortet."
+    }
+  },
+  "selector": {
+    "preferred_proxy": {
+      "options": {
+        "auto": "Automatisch (bestes Signal)",
+        "missing": "gerade nicht da"
+      }
+    }
+  }
+}
