@@ -1,5 +1,5 @@
 {
-  "$comment": "Content of the README pictures. Cards: node sh1ft-w.github.io/theme/v1/readme-images/render.mjs <this repo> cards. The README title image is docs/images/readme-title.webp, a finished AI-generated composition (free to use), used unchanged; the title block here is not used. docs/images/stage-photo.jpg is the photo part of it for the website hero.",
+  "$comment": "Content of the README pictures. Cards: node sh1ft-w.github.io/theme/v1/readme-images/render.mjs <this repo> cards. The README title image is docs/images/readme-title.webp, a finished AI-generated composition (free to use), used unchanged; the title block here is not used. The project page shows the same image in the hero. docs/images/stage-photo.jpg is the photo part of it, only referenced by the unused title block.",
   "title": {
     "name": "Fluval",
     "eyebrow": "For Home Assistant",

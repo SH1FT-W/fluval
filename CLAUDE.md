@@ -61,8 +61,8 @@ montags Frühwarnung gegen die neueste HA. Pakete der CI in `requirements_test.t
 
 README-Bilder: Karten aus `docs/readme-images.json`, gerendert mit `theme/v1/readme-images/render.mjs <repo> cards`
 aus sh1ft-w.github.io. Das Titelbild `docs/images/readme-title.webp` ist eine fertige KI-Komposition (frei verwendbar,
-ohne EXIF/XMP) und wird unverändert übernommen, für hell und dunkel dasselbe. `docs/images/stage-photo.jpg` = Fotoausschnitt
-rechts daraus (ab x 760, ohne Text) für den Hero der Projektseite.
+ohne EXIF/XMP) und wird unverändert übernommen, für hell und dunkel dasselbe. Die Projektseite zeigt dasselbe Bild im Hero. `docs/images/stage-photo.jpg` =
+Fotoausschnitt rechts daraus (ab x 760, ohne Text), nur noch im ungenutzten title-Block der readme-images.json.
 
 ## Harte Regeln
 - **Nie zu einer echten Lampe verbinden, die gerade von einer anderen Home-Assistant-Instanz genutzt wird** (nur eine
