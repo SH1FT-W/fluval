@@ -24,6 +24,7 @@ POLL_CONNECTED: Final = timedelta(seconds=30)
 POLL_ON_DEMAND: Final = timedelta(minutes=5)
 # Nach so vielen Fehlversuchen hintereinander wird seltener versucht (bis höchstens alle 5 Minuten).
 BACKOFF_AFTER: Final = 3
+BACKOFF_MAX_STEPS: Final = 16  # 2**16 times the poll interval is far above POLL_MAX
 POLL_MAX: Final = timedelta(minutes=5)
 # Ohne „Verbindung halten“: so lange nach dem letzten Befehl verbunden bleiben.
 IDLE_DISCONNECT: Final = 30

@@ -13,7 +13,8 @@ from homeassistant.helpers import device_registry as dr, entity_registry as er, 
 import pytest
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
 
-from custom_components.fluvalble.const import DOMAIN
+from custom_components.fluvalble.ble import NotInRange
+from custom_components.fluvalble.const import DOMAIN, POLL_MAX
 from custom_components.fluvalble.diagnostics import async_get_config_entry_diagnostics
 
 from .conftest import ENTRY_ID, MAC, UID, FakeLamp, old_entry
@@ -171,6 +172,14 @@ async def test_stale_then_unavailable_and_repair_issue(
     assert hass.states.get(LIGHT).state == STATE_ON
     assert issues.async_get_issue(DOMAIN, f"unreachable_{ENTRY_ID}") is None
     assert prod.runtime_data.update_interval == timedelta(seconds=30)
+
+
+async def test_long_outage_backoff_does_not_overflow(hass: HomeAssistant, prod):
+    """A lamp unreachable for hours: the backoff stays at POLL_MAX instead of overflowing timedelta."""
+    c = prod.runtime_data
+    c.stats.failures_in_row = 60
+    c._failure(NotInRange("out of range"))
+    assert c.update_interval == POLL_MAX
 
 
 async def test_reconnects_after_drop(hass: HomeAssistant, prod, lamp: FakeLamp, freezer: FrozenDateTimeFactory):

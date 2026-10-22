@@ -1,5 +1,11 @@
 # Changelog
 
+## 26.10.4 – 22.10.2026
+
+- **Fix:** after a long outage (lamp unreachable for many polls in a row) the retry backoff overflowed
+  (`OverflowError` in the coordinator, logged as "Unexpected error fetching fluvalble data"). The backoff now stays
+  at 5 minutes however long the lamp is away, and it comes back normally once the lamp answers again.
+
 ## 26.10.3 – 19.10.2026
 
 - **More lights:** besides the Reef Nano 4.0 the integration now supports every Fluval light of the current

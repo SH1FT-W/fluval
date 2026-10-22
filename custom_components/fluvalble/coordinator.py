@@ -34,6 +34,7 @@ from . import protocol
 from .ble import FluvalError, FluvalLink
 from .const import (
     BACKOFF_AFTER,
+    BACKOFF_MAX_STEPS,
     CONF_KEEP_CONNECTED,
     CONF_MAC,
     CONF_PREFERRED_PROXY,
@@ -286,8 +287,9 @@ class FluvalCoordinator(DataUpdateCoordinator[LampState]):
         self.stats.failures_in_row += 1
         self.stats.last_error = str(err)
         if self.stats.failures_in_row >= BACKOFF_AFTER:
-            factor = 2 ** (self.stats.failures_in_row - BACKOFF_AFTER + 1)
-            self.update_interval = min(POLL_MAX, self._base_interval * factor)
+            # Cap the exponent: after a long outage 2**n times the interval overflowed timedelta.
+            steps = min(self.stats.failures_in_row - BACKOFF_AFTER + 1, BACKOFF_MAX_STEPS)
+            self.update_interval = min(POLL_MAX, self._base_interval * 2**steps)
         since = self.last_contact or self.started
         if dt_util.utcnow() - since >= UNREACHABLE_ISSUE:
             ir.async_create_issue(
