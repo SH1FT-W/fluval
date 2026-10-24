@@ -1,6 +1,9 @@
 <div align="center">
 
-<img src="docs/images/readme-title.webp" alt="Fluval: Your aquarium light, fully local. A reef aquarium lit by Fluval LED lights, with more Fluval light bars on a cabinet in front of it." />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-title-dark.webp" />
+  <img src="docs/images/readme-title-light.webp" alt="Fluval: Your aquarium light, fully local. The feature overview of the project page in a window." />
+</picture>
 
 <p>Local Bluetooth control for Fluval Reef and Plant 4.0 LED lights in Home Assistant.<br/>
 Robust, honest states, no cloud.</p>
@@ -31,20 +34,26 @@ It succeeds [MrMooreUK/fluvalble](https://github.com/MrMooreUK/fluvalble) and **
 <sub><b>JUST ARRIVED</b></sub>
 ## More lights of the same generation.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-cards-new-dark.png" />
-  <img src="docs/images/readme-cards-new-light.png" alt="More Fluval lights (26.10.3): Reef 4.0, Plant 4.0, Plant Nano 4.0, Plant PRO, Siena 2.0 and A-Sky Aqua join the Reef Nano 4.0, the model comes from the Bluetooth advertisement. Plant channels and colours (26.10.3): Pink, Blue, Cold, Pure and Warm white with colour mixing from their own spectra. Calmer signal updates (26.10.2). Calendar versions (26.10.1)." />
-</picture>
+<!-- cards:new -->
+<table>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/lightbulb-group-outline-dark.svg"><img src="docs/images/icons/lightbulb-group-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>More Fluval lights</b> <code>26.10.3</code><br>Reef 4.0, Plant 4.0, Plant Nano 4.0, Plant PRO, Siena 2.0 and A-Sky Aqua join the Reef Nano 4.0. The model comes from the Bluetooth advertisement.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/palette-outline-dark.svg"><img src="docs/images/icons/palette-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Plant channels and colours</b> <code>26.10.3</code><br>Plant models get Pink, Blue, Cold, Pure and Warm white, with colour mixing from their own LED spectra.</td></tr>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/signal-cellular-2-dark.svg"><img src="docs/images/icons/signal-cellular-2-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Calmer signal updates</b> <code>26.10.2</code><br>Signal strength is written only on visible changes, odd confirmation replies are caught instead of raising errors.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/calendar-outline-dark.svg"><img src="docs/images/icons/calendar-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Calendar versions</b> <code>26.10.1</code><br>Year, month and the release of that month: 26.10.3 is the third release of October 2026.</td></tr>
+</table>
+<!-- /cards:new -->
 
 Every change, release by release, in the [changelog](CHANGELOG.md).
 
 <a id="features"></a>
 ## Features
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-cards-features-dark.png" />
-  <img src="docs/images/readme-cards-features-light.png" alt="Every channel a slider: all five LED channels from 0 to 100 percent, above 0 switches on, all at 0 switches off, plus set_channels. An RGB light with transitions: colours mixed from the real LED spectra. Holds what you set: Home Assistant restores what it last set, at most once a minute. Honest states: values always come from the lamp, commands count only once confirmed. Robust Bluetooth: one queue, firm time limits, clean reconnects, ESPHome proxies with a preferred proxy. Programs in the lamp: read the automatic and professional program, write a professional day schedule and timed effects. Effects and weather: the lamp's effects, lightning in the tank during a thunderstorm. Diagnostics that help: reachable, repair issue, diagnostics download." />
-</picture>
+<!-- cards:features -->
+<table>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/tune-vertical-dark.svg"><img src="docs/images/icons/tune-vertical-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Every channel a slider</b><br>All five LED channels from 0 to 100 %. A value above 0 switches on, all at 0 really switches off. Plus set_channels for all at once.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/lightbulb-on-outline-dark.svg"><img src="docs/images/icons/lightbulb-on-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>An RGB light with transitions</b><br>Colours are mixed from the real LED spectra of the model. Brightness keeps the mix, transition fades in gentle steps.</td></tr>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/shield-check-outline-dark.svg"><img src="docs/images/icons/shield-check-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Holds what you set</b><br>Late echoes, the lamp's own scene after power-on or a power cut: Home Assistant restores what it last set, at most once a minute.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/check-decagram-outline-dark.svg"><img src="docs/images/icons/check-decagram-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Honest states</b><br>Values always come from the lamp. Without contact entities are unavailable, never a guessed 0 %. Commands count only once confirmed.</td></tr>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/bluetooth-connect-dark.svg"><img src="docs/images/icons/bluetooth-connect-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Robust Bluetooth</b><br>One queue for all commands, firm time limits, clean reconnects, backoff when the lamp is silent. Works through ESPHome proxies, with a preferred proxy.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/calendar-clock-dark.svg"><img src="docs/images/icons/calendar-clock-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Programs in the lamp</b><br>Read the automatic and professional program, write a professional day schedule and up to seven timed effects. They run without Home Assistant.</td></tr>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/weather-lightning-dark.svg"><img src="docs/images/icons/weather-lightning-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Effects and weather</b><br>The lamp's effects on the light card. With a weather entity, a thunderstorm outside plays lightning in the tank for a few minutes.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/stethoscope-dark.svg"><img src="docs/images/icons/stethoscope-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Diagnostics that help</b><br>Reachable with proxy, signal and last error, a repair issue after 30 minutes of silence and a diagnostics download without MAC address.</td></tr>
+</table>
+<!-- /cards:features -->
 
 - **Switching on** without values brings back the last mix (never a flash of 100 % white); in automatic or professional mode it only switches on and the lamp's program decides the colour.
 - **Transitions:** `transition` on the light and on `set_channels` runs in gentle steps (every 2 s); a new command cancels a running transition.
@@ -73,10 +82,13 @@ Lights of the **current Fluval Bluetooth generation with five channels on the FF
 <a id="entities"></a>
 ## Entities
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-cards-entities-dark.png" />
-  <img src="docs/images/readme-cards-entities-light.png" alt="Light: RGB from the five channels, brightness, effects, transition, attribute channels. Channel numbers: Reef pink, cyan, blue, purple, cold_white; Plant pink, blue, cold_white, pure_white, warm_white. Mode and weather: mode, weather_effects, weather_effect_minutes. Buttons and switch: identify, sync_clock, reconnect, hold_state. Sensors: last_seen, source, signal_strength, timed_effects. Diagnostics: reachable." />
-</picture>
+<!-- cards:entities -->
+<table>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/lightbulb-outline-dark.svg"><img src="docs/images/icons/lightbulb-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Light</b><br>light.<name>_light: RGB from the five channels, brightness, effects, transition. Attribute channels with the real values.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/tune-variant-dark.svg"><img src="docs/images/icons/tune-variant-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Channel numbers</b><br>Reef: pink, cyan, blue, purple, cold_white. Plant: pink, blue, cold_white, pure_white, warm_white. 0 to 100 % each.</td></tr>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/form-dropdown-dark.svg"><img src="docs/images/icons/form-dropdown-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Mode and weather</b><br>mode (manual, automatic, professional), weather_effects and weather_effect_minutes.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/gesture-tap-button-dark.svg"><img src="docs/images/icons/gesture-tap-button-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Buttons and switch</b><br>identify, sync_clock and reconnect. hold_state switches restoring the desired state on and off.</td></tr>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/information-outline-dark.svg"><img src="docs/images/icons/information-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Sensors</b><br>last_seen, source and signal_strength of the connection, timed_effects stored in the lamp.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/stethoscope-dark.svg"><img src="docs/images/icons/stethoscope-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Diagnostics</b><br>reachable with the attributes gatt_connected, source, rssi and last_error.</td></tr>
+</table>
+<!-- /cards:entities -->
 
 `<name>` is the device name in entity ID form; when you switch from the previous integration, the existing prefix is kept. Entity names are available in English and German.
 
@@ -246,10 +258,11 @@ When you open an [issue](https://github.com/SH1FT-W/fluval/issues), please attac
 
 ## How it works
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-cards-how-dark.png" />
-  <img src="docs/images/readme-cards-how-light.png" alt="FFF0 service: commands on FFF2, replies on FFF1, also through ESPHome proxies. D1 plus CBOR: mode, power, channels and effects as separate frames, then a state read as confirmation. D2 state: the full state, split over several packets and put back together." />
-</picture>
+<!-- cards:how -->
+<table>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/bluetooth-dark.svg"><img src="docs/images/icons/bluetooth-light.svg" width="26" height="26" alt=""></picture></td><td width="29%" valign="top"><b>FFF0 service</b><br>Commands on FFF2, replies as notifications on FFF1, also through ESPHome Bluetooth proxies.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/code-braces-dark.svg"><img src="docs/images/icons/code-braces-light.svg" width="26" height="26" alt=""></picture></td><td width="29%" valign="top"><b>D1 + CBOR</b><br>Mode, power, channels and effects as separate frames, like the app, then a state read as confirmation.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/sync-dark.svg"><img src="docs/images/icons/sync-light.svg" width="26" height="26" alt=""></picture></td><td width="29%" valign="top"><b>D2 state</b><br>The full state, split over several packets and put back together, every 30 seconds and on every change.</td></tr>
+</table>
+<!-- /cards:how -->
 
 The protocol (Bluetooth service FFF0, commands `D1` + CBOR, state `D2` + CBOR, clock `CD …`) and the product IDs and LED spectra come from the official FluvalConnect app and match [MrMooreUK/fluvalble](https://github.com/MrMooreUK/fluvalble). The product table, the spectrum tables and the colour fit are derived from that project (Apache 2.0, see [`NOTICE`](NOTICE)); connection, commands and state handling were written anew. Compared with the previous integration, the weekdays of timed effects are fixed (bit 0 = Sunday). Protocol notes are in [`CLAUDE.md`](CLAUDE.md) (German).
 

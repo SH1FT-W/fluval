@@ -59,10 +59,11 @@ repo-vorlagen/vorlagen/ci-ha-integration.yml): ruff, mypy, Übersetzungen, pytes
 montags Frühwarnung gegen die neueste HA. Pakete der CI in `requirements_test.txt` (dieselben Versionen wie oben).
 `tools/next-version` und `tools/pruefe-uebersetzungen.py` sind byteidentische Kopien der Vorlagen (`repo-vorlagen/vorlagen/abgleich.sh`).
 
-README-Bilder: Karten aus `docs/readme-images.json`, gerendert mit `theme/v1/readme-images/render.mjs <repo> cards`
-aus sh1ft-w.github.io. Das Titelbild `docs/images/readme-title.webp` ist eine fertige KI-Komposition (frei verwendbar,
-ohne EXIF/XMP) und wird unverändert übernommen, für hell und dunkel dasselbe. Die Projektseite zeigt dasselbe Bild im Hero. `docs/images/stage-photo.jpg` =
-Fotoausschnitt rechts daraus (ab x 760, ohne Text), nur noch im ungenutzten title-Block der readme-images.json.
+README-Bilder: Titelbild und Karten aus `docs/readme-images.json` mit `theme/v1/readme-images/render.mjs <repo>`
+aus sh1ft-w.github.io: Titel als `docs/images/readme-title-{light,dark}.webp` (2560 × 1280, Fenster zeigt
+`docs/images/title-shot-*.png`, den Funktionsblock der Projektseite mit 2× aufgenommen) plus `readme-title-social.png`
+für die GitHub-Vorschau; die Karten stehen als Markdown-Tabellen zwischen `<!-- cards:… -->` im README, Icons in
+`docs/images/icons/`. Die Projektseite zeigt das Titelbild im Hero.
 
 ## Harte Regeln
 - **Nie zu einer echten Lampe verbinden, die gerade von einer anderen Home-Assistant-Instanz genutzt wird** (nur eine
