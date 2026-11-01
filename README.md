@@ -85,7 +85,7 @@ Lights of the **current Fluval Bluetooth generation with five channels on the FF
 <!-- cards:entities -->
 <table>
 <tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/lightbulb-outline-dark.svg"><img src="docs/images/icons/lightbulb-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Light</b><br>light.<name>_light: RGB from the five channels, brightness, effects, transition. Attribute channels with the real values.</td><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/tune-variant-dark.svg"><img src="docs/images/icons/tune-variant-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Channel numbers</b><br>Reef: pink, cyan, blue, purple, cold_white. Plant: pink, blue, cold_white, pure_white, warm_white. 0 to 100 % each.</td></tr>
-<tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/form-dropdown-dark.svg"><img src="docs/images/icons/form-dropdown-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Mode and weather</b><br>mode (manual, automatic, professional), weather_effects and weather_effect_minutes.</td><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/gesture-tap-button-dark.svg"><img src="docs/images/icons/gesture-tap-button-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Buttons and switch</b><br>identify, sync_clock and reconnect. hold_state switches restoring the desired state on and off.</td></tr>
+<tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/form-dropdown-dark.svg"><img src="docs/images/icons/form-dropdown-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Mode and weather</b><br>mode (manual, automatic, professional), profile, weather_effects and weather_effect_minutes.</td><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/gesture-tap-button-dark.svg"><img src="docs/images/icons/gesture-tap-button-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Buttons and switch</b><br>identify, sync_clock, save_profile and reconnect. hold_state switches restoring the desired state on and off.</td></tr>
 <tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/information-outline-dark.svg"><img src="docs/images/icons/information-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Sensors</b><br>last_seen, source and signal_strength of the connection, timed_effects stored in the lamp.</td><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/stethoscope-dark.svg"><img src="docs/images/icons/stethoscope-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Diagnostics</b><br>reachable with the attributes gatt_connected, source, rssi and last_error.</td></tr>
 </table>
 <!-- /cards:entities -->
@@ -101,10 +101,12 @@ Lights of the **current Fluval Bluetooth generation with five channels on the FF
 | `number.<name>_pink` / `_cyan` / `_blue` / `_purple` / `_cold_white` | Reef models: one channel each (0 to 100 %) |
 | `number.<name>_pink` / `_blue` / `_cold_white` / `_pure_white` / `_warm_white` | Plant models: one channel each (0 to 100 %) |
 | `select.<name>_mode` | `manual` (Home Assistant decides), `automatic`, `professional` (the lamp's program) |
+| `select.<name>_profile` | Saved profiles; picking one writes it as the professional program and switches to `professional`; shows the running profile |
 | `switch.<name>_hold_state` | Hold state |
 | `select.<name>_weather_effects` | Effects from weather: off, thunderstorm only, thunderstorm and clouds |
 | `number.<name>_weather_effect_minutes` | Duration of a weather effect, 1 to 120 minutes |
 | `button.<name>_identify` / `_sync_clock` / `_reconnect` | Blink the lamp, set its clock, reconnect |
+| `button.<name>_save_profile` | Save the professional program the lamp holds right now as a new profile |
 | `binary_sensor.<name>_reachable` | Diagnostic: reachable; attributes `gatt_connected`, `source`, `rssi`, `last_error` |
 | `sensor.<name>_last_seen` / `_source` / `_signal_strength` | Diagnostic: connected since, through which proxy, signal |
 | `sensor.<name>_timed_effects` | Diagnostic: timed effects stored in the lamp |
@@ -185,6 +187,16 @@ data:
     - { time: "21:00", blue: 5 }
 ```
 
+### Profiles
+
+The FluvalConnect app keeps its profiles on the phone; the lamp only stores the one professional program that is active, so Home Assistant cannot read the app's profile list. Instead the integration keeps its own profiles:
+
+1. Pick a profile in the app (or write one with `set_pro_program`). The app needs the lamp's only Bluetooth connection, so turn off *Keep connected* or wait for a gap. With *hold state* on, Home Assistant switches the mode back to what it last set; the program itself stays in the lamp, so saving still works.
+2. Press **Save program as profile** (`button.<name>_save_profile`). The integration reads the program from the lamp and saves it as *Profile 1*, *Profile 2* … (up to 20, names up to 100 characters). A program that is already saved is not stored twice.
+3. Rename or delete profiles under **Options > Rename or delete a profile**.
+
+`select.<name>_profile` lists the saved profiles and shows the one that is running: mode `professional` and the program in the lamp matches it (otherwise unknown). Picking a profile writes it into the lamp and switches the mode to `professional`, so profiles can be changed by automations too. The app does not know these profiles; it simply shows the program that is in the lamp.
+
 If a command fails (lamp not reachable, no confirmation, invalid windows or points), the action stops with an error message.
 
 ## Installation
@@ -213,7 +225,7 @@ Supported lights are discovered automatically over Bluetooth. Otherwise: **Setti
 | Preferred proxy | Connect through this Bluetooth proxy first (signal in brackets if it sees the light). If that fails, another one is used and the preferred one is tried again after 30 minutes. |
 | Weather for "effects from weather" | Weather entity for the *weather effects* select (off, thunderstorm only, thunderstorm and clouds). |
 
-The entry reloads when saved. The weather effect duration and *hold state* are entities.
+Once profiles are saved, the options first ask whether to change these settings or rename or delete a profile. The entry reloads when saved. The weather effect duration and *hold state* are entities.
 
 ## Switching from MrMooreUK/fluvalble
 

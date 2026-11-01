@@ -27,10 +27,11 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr, issue_registry as ir
 from homeassistant.helpers.event import async_call_later, async_track_state_change_event, async_track_time_change
 from homeassistant.helpers.storage import Store
+from homeassistant.helpers.translation import async_get_translations
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 
-from . import protocol
+from . import profiles as profile_store, protocol
 from .ble import FluvalError, FluvalLink
 from .const import (
     BACKOFF_AFTER,
@@ -39,6 +40,7 @@ from .const import (
     CONF_MAC,
     CONF_PREFERRED_PROXY,
     CONF_PRODUCT_ID,
+    CONF_PROFILES,
     CONF_WEATHER,
     DEFAULT_KEEP_CONNECTED,
     DOMAIN,
@@ -47,6 +49,7 @@ from .const import (
     POLL_CONNECTED,
     POLL_MAX,
     POLL_ON_DEMAND,
+    PROFILES_MAX,
     PROXY_AUTO,
     RESTORE_BACKOFF,
     RSSI_STEP,
@@ -194,6 +197,10 @@ class FluvalCoordinator(DataUpdateCoordinator[LampState]):
         self.hold = bool(stored.get("hold", True))
         self.weather_fx = str(stored.get("weather_fx", WEATHER_FX_OFF))
         self.weather_fx_minutes = int(stored.get("weather_fx_minutes", 10))
+        raw_profiles = self.config_entry.options.get(CONF_PROFILES)
+        if skipped := (len(raw_profiles) if isinstance(raw_profiles, list) else 0) - len(self.profiles):
+            # Broken entries are left out (and disappear with the next save); say so once instead of silently.
+            self.note(f"{skipped} ungültige Profile in den Optionen übersprungen", logging.WARNING)
         if weather := self.config_entry.options.get(CONF_WEATHER):
             self.config_entry.async_on_unload(async_track_state_change_event(self.hass, weather, self._weather_event))
         self.config_entry.async_on_unload(
@@ -613,6 +620,81 @@ class FluvalCoordinator(DataUpdateCoordinator[LampState]):
         self.note(f"Profi-Programm gespeichert: {len(points)} Stützpunkte")
         if activate:
             await self.async_set_mode(PROFESSIONAL)
+
+    # --- Profiles (saved professional programs, like the profiles in the app) ------------------------------
+
+    @property
+    def profiles(self) -> list[profile_store.Profile]:
+        return profile_store.load(self.config_entry.options)
+
+    def active_profile(self) -> str | None:
+        """Saved profile that is running: mode professional and its points match the program in the lamp."""
+        # The last raw value, not `state.pro`: that keeps the previous program when the new one is unreadable.
+        points = protocol.decode_pro(self.state.raw.get(KEY_PRO))
+        if self.state.mode != PROFESSIONAL or not points:
+            return None
+        current = profile_store.normalize(points)
+        return next((p.name for p in self.profiles if p.points == current), None)
+
+    async def async_apply_profile(self, name: str) -> None:
+        """Write a saved profile as the professional program and switch to mode professional."""
+        profile = next((p for p in self.profiles if p.name == name), None)
+        if profile is None:
+            raise HomeAssistantError(
+                translation_domain=DOMAIN, translation_key="unknown_profile", translation_placeholders={"name": name}
+            )
+        self.note(f"Profil „{name}“ wird geladen")
+        await self.async_set_pro_program(list(profile.points), activate=True)
+
+    async def async_save_profile(self) -> str:
+        """Save the professional program the lamp holds right now (e.g. picked in the app) as a new profile."""
+        try:
+            fresh = await self.link.status()
+        except FluvalError as err:
+            self.stats.last_error = str(err)
+            self.async_set_updated_data(self.state)
+            raise HomeAssistantError(
+                translation_domain=DOMAIN, translation_key=err.key, translation_placeholders={"error": str(err)}
+            ) from err
+        self._success()
+        self.async_set_updated_data(self.state)
+        # Only this answer counts: `state` keeps the previous program if key 13 is missing or unreadable.
+        points = protocol.decode_pro(fresh.get(KEY_PRO))
+        if points is None:
+            raise HomeAssistantError(translation_domain=DOMAIN, translation_key="pro_unreadable")
+        if not points:
+            raise HomeAssistantError(translation_domain=DOMAIN, translation_key="no_pro_program")
+        try:
+            protocol.pro_blob(list(points))  # must be writable again (e.g. no time twice)
+        except ProtocolError as err:
+            raise HomeAssistantError(
+                translation_domain=DOMAIN, translation_key="bad_points", translation_placeholders={"error": str(err)}
+            ) from err
+        texts = await async_get_translations(self.hass, self.hass.config.language, "selector", {DOMAIN})
+        base = texts.get(f"component.{DOMAIN}.selector.profile_name.options.default", "Profile")
+        # From here on no await: the list must be the current one (the options dialog may have changed it meanwhile).
+        saved = self.profiles
+        current = profile_store.normalize(points)
+        if (existing := next((p.name for p in saved if p.points == current), None)) is not None:
+            raise HomeAssistantError(
+                translation_domain=DOMAIN, translation_key="profile_exists", translation_placeholders={"name": existing}
+            )
+        if len(saved) >= PROFILES_MAX:
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="too_many_profiles",
+                translation_placeholders={"max": str(PROFILES_MAX)},
+            )
+        names = {p.name for p in saved}
+        name = next(f"{base} {n}" for n in itertools.count(len(saved) + 1) if f"{base} {n}" not in names)
+        profile = profile_store.Profile(name, current)
+        self.hass.config_entries.async_update_entry(
+            self.config_entry,
+            options={**self.config_entry.options, CONF_PROFILES: profile_store.dump([*saved, profile])},
+        )
+        self.note(f"Profil „{name}“ gespeichert: {len(profile.points)} Stützpunkte")
+        self.async_update_listeners()
+        return name
 
     # --- Effekte nach Wetter -----------------------------------------------------------------------------
 

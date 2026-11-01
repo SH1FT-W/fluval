@@ -23,6 +23,13 @@
   "options": {
     "step": {
       "init": {
+        "title": "Optionen",
+        "menu_options": {
+          "settings": "Einstellungen",
+          "profiles": "Profil umbenennen oder löschen"
+        }
+      },
+      "settings": {
         "title": "Einstellungen",
         "data": {
           "keep_connected": "Verbindung halten",
@@ -34,7 +41,30 @@
           "weather_entity": "Bei Gewitter (und auf Wunsch bei Wolken) spielt die Lampe kurz den passenden Effekt und kehrt dann zur Mischung zurück – höchstens einmal pro Stunde, nur wenn das Licht an ist.",
           "preferred_proxy": "Der erste Verbindungsversuch läuft über diesen Bluetooth-Proxy (in Klammern das Signal, falls er die Lampe gerade sieht). Sieht er sie nicht, hat er keinen freien Platz oder scheitert er, wird automatisch ein anderer genommen; der bevorzugte wird nach 30 Minuten wieder versucht."
         }
+      },
+      "profiles": {
+        "title": "Profile",
+        "description": "Profile sind gespeicherte Profi-Programme. Neue kommen aus der Lampe: In der Fluval-App ein Profil wählen, dann den Knopf „Programm als Profil speichern“ drücken.",
+        "data": {
+          "profiles": "Profil"
+        }
+      },
+      "profile": {
+        "title": "Profil {name}",
+        "description": "Stützpunkte (Uhrzeit, Kanäle in %): {points}",
+        "data": {
+          "name": "Name",
+          "delete": "Profil löschen"
+        }
       }
+    },
+    "error": {
+      "name_empty": "Bitte einen Namen eingeben.",
+      "name_taken": "Ein anderes Profil heißt schon so.",
+      "name_too_long": "Der Name darf höchstens 100 Zeichen haben."
+    },
+    "abort": {
+      "profile_gone": "Das Profil gibt es nicht mehr. Bitte die Optionen neu öffnen."
     }
   },
   "entity": {
@@ -99,6 +129,9 @@
           "storm": "Nur Gewitter",
           "storm_clouds": "Gewitter + Wolken"
         }
+      },
+      "profile": {
+        "name": "Profil"
       }
     },
     "switch": {
@@ -112,6 +145,9 @@
       },
       "reconnect": {
         "name": "Neu verbinden"
+      },
+      "save_profile": {
+        "name": "Programm als Profil speichern"
       }
     },
     "binary_sensor": {
@@ -243,6 +279,21 @@
     },
     "unknown_channel": {
       "message": "Diese Lampe hat keinen Kanal {channels}. Kanäle: {valid}."
+    },
+    "unknown_profile": {
+      "message": "Es gibt kein gespeichertes Profil namens {name}."
+    },
+    "no_pro_program": {
+      "message": "In der Lampe ist kein Profi-Programm gespeichert. Erst in der Fluval-App ein Profil wählen."
+    },
+    "profile_exists": {
+      "message": "Das Profi-Programm der Lampe ist schon als Profil {name} gespeichert."
+    },
+    "too_many_profiles": {
+      "message": "Höchstens {max} Profile lassen sich speichern. Erst in den Optionen eines löschen."
+    },
+    "pro_unreadable": {
+      "message": "Die Lampe hat kein lesbares Profi-Programm gemeldet (fehlt oder unbekanntes Format). Bitte noch einmal versuchen."
     }
   },
   "issues": {
@@ -256,6 +307,11 @@
       "options": {
         "auto": "Automatisch (bestes Signal)",
         "missing": "gerade nicht da"
+      }
+    },
+    "profile_name": {
+      "options": {
+        "default": "Profil"
       }
     }
   }

@@ -23,6 +23,13 @@
   "options": {
     "step": {
       "init": {
+        "title": "Options",
+        "menu_options": {
+          "settings": "Settings",
+          "profiles": "Rename or delete a profile"
+        }
+      },
+      "settings": {
         "title": "Settings",
         "data": {
           "keep_connected": "Keep connected",
@@ -34,7 +41,30 @@
           "weather_entity": "On thunderstorms (and optionally clouds) the lamp briefly plays the matching effect and returns to its mix – at most once per hour, only while the light is on.",
           "preferred_proxy": "First connection attempt goes through this Bluetooth proxy (signal in brackets, if it currently sees the lamp). If it does not see the lamp, has no free slot or fails, another one is used automatically; the preferred one is tried again after 30 minutes."
         }
+      },
+      "profiles": {
+        "title": "Profiles",
+        "description": "Profiles are saved professional programs. New ones come from the lamp: pick a profile in the Fluval app, then press the button \"Save program as profile\".",
+        "data": {
+          "profiles": "Profile"
+        }
+      },
+      "profile": {
+        "title": "Profile {name}",
+        "description": "Points (time, channels in %): {points}",
+        "data": {
+          "name": "Name",
+          "delete": "Delete profile"
+        }
       }
+    },
+    "error": {
+      "name_empty": "Please enter a name.",
+      "name_taken": "Another profile already has this name.",
+      "name_too_long": "The name may have at most 100 characters."
+    },
+    "abort": {
+      "profile_gone": "The profile no longer exists. Please open the options again."
     }
   },
   "entity": {
@@ -99,6 +129,9 @@
           "storm": "Thunderstorm only",
           "storm_clouds": "Thunderstorm + clouds"
         }
+      },
+      "profile": {
+        "name": "Profile"
       }
     },
     "switch": {
@@ -112,6 +145,9 @@
       },
       "reconnect": {
         "name": "Reconnect"
+      },
+      "save_profile": {
+        "name": "Save program as profile"
       }
     },
     "binary_sensor": {
@@ -243,6 +279,21 @@
     },
     "unknown_channel": {
       "message": "This lamp has no channel {channels}. Channels: {valid}."
+    },
+    "unknown_profile": {
+      "message": "There is no saved profile named {name}."
+    },
+    "no_pro_program": {
+      "message": "The lamp holds no professional program. Pick a profile in the Fluval app first."
+    },
+    "profile_exists": {
+      "message": "The professional program in the lamp is already saved as profile {name}."
+    },
+    "too_many_profiles": {
+      "message": "At most {max} profiles can be saved. Delete one in the options first."
+    },
+    "pro_unreadable": {
+      "message": "The lamp reported no readable professional program (missing or unknown format). Try again."
     }
   },
   "issues": {
@@ -256,6 +307,11 @@
       "options": {
         "auto": "Automatic (best signal)",
         "missing": "not seen right now"
+      }
+    },
+    "profile_name": {
+      "options": {
+        "default": "Profile"
       }
     }
   }

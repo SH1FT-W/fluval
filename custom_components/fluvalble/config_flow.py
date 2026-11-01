@@ -15,19 +15,23 @@ from homeassistant.helpers.selector import (
     SelectSelector,
     SelectSelectorConfig,
     SelectSelectorMode,
+    TextSelector,
 )
 from homeassistant.helpers.translation import async_get_translations
 import voluptuous as vol
 
+from . import profiles as profile_store
 from .const import (
     CONF_KEEP_CONNECTED,
     CONF_MAC,
     CONF_MODEL,
     CONF_PREFERRED_PROXY,
     CONF_PRODUCT_ID,
+    CONF_PROFILES,
     CONF_WEATHER,
     DEFAULT_KEEP_CONNECTED,
     DOMAIN,
+    PROFILE_NAME_MAX,
     PROXY_AUTO,
 )
 from .products import DEFAULT_PRODUCT, Product, product_for, product_id_from_advertisement
@@ -120,9 +124,80 @@ class FluvalConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class FluvalOptionsFlow(OptionsFlowWithReload):
+    """Settings; with saved profiles first a menu: settings or rename/delete a profile."""
+
+    def __init__(self) -> None:
+        self._profile: str | None = None
+
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        if profile_store.load(self.config_entry.options):
+            return self.async_show_menu(step_id="init", menu_options=["settings", "profiles"])
+        return await self.async_step_settings()
+
+    def _save(self, settings: dict[str, Any], profiles: list[profile_store.Profile]) -> ConfigFlowResult:
+        """Options = settings plus the profiles (left out when there are none)."""
+        data = dict(settings)
+        if profiles:
+            data[CONF_PROFILES] = profile_store.dump(profiles)
+        return self.async_create_entry(data=data)
+
+    def _settings(self) -> dict[str, Any]:
+        return {k: v for k, v in self.config_entry.options.items() if k != CONF_PROFILES}
+
+    async def async_step_profiles(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        """Pick the profile to rename or delete."""
         if user_input is not None:
-            return self.async_create_entry(data=user_input)
+            self._profile = user_input[CONF_PROFILES]
+            return await self.async_step_profile()
+        names = [p.name for p in profile_store.load(self.config_entry.options)]
+        if not names:  # emptied meanwhile (another options dialog or the options changed from outside)
+            return self.async_abort(reason="profile_gone")
+        schema = vol.Schema(
+            {
+                vol.Required(CONF_PROFILES, default=names[0]): SelectSelector(
+                    SelectSelectorConfig(options=names, mode=SelectSelectorMode.LIST)
+                )
+            }
+        )
+        return self.async_show_form(step_id="profiles", data_schema=schema)
+
+    async def async_step_profile(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        """Rename or delete one profile; the points come from the lamp (button "Save program as profile")."""
+        saved = profile_store.load(self.config_entry.options)
+        profile = next((p for p in saved if p.name == self._profile), None)
+        if profile is None:  # changed in the meantime (e.g. the button saved another profile)
+            return self.async_abort(reason="profile_gone")
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            others = [p for p in saved if p is not profile]
+            if user_input.get("delete"):
+                return self._save(self._settings(), others)
+            name = str(user_input.get("name", "")).strip()
+            if not name:
+                errors["name"] = "name_empty"
+            elif len(name) > PROFILE_NAME_MAX:
+                errors["name"] = "name_too_long"
+            elif any(p.name == name for p in others):
+                errors["name"] = "name_taken"
+            else:
+                renamed = profile_store.Profile(name, profile.points)
+                return self._save(self._settings(), [renamed if p is profile else p for p in saved])
+        schema = vol.Schema(
+            {
+                vol.Required("name", default=profile.name): TextSelector(),
+                vol.Required("delete", default=False): bool,
+            }
+        )
+        return self.async_show_form(
+            step_id="profile",
+            data_schema=schema,
+            errors=errors,
+            description_placeholders={"name": profile.name, "points": profile_store.describe(profile)},
+        )
+
+    async def async_step_settings(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        if user_input is not None:
+            return self._save(user_input, profile_store.load(self.config_entry.options))
         options = self.config_entry.options
         current = options.get(CONF_KEEP_CONNECTED, DEFAULT_KEEP_CONNECTED)
         preferred = options.get(CONF_PREFERRED_PROXY, PROXY_AUTO)
@@ -141,7 +216,7 @@ class FluvalOptionsFlow(OptionsFlowWithReload):
                 ),
             }
         )
-        return self.async_show_form(step_id="init", data_schema=schema)
+        return self.async_show_form(step_id="settings", data_schema=schema)
 
     async def _proxy_options(self, preferred: str) -> list[SelectOptionDict]:
         """ "Automatic" plus every proxy/adapter that can connect (signal if it sees the lamp), translated labels."""

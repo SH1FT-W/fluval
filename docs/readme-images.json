@@ -159,12 +159,12 @@
       {
         "icon": "form-dropdown",
         "title": "Mode and weather",
-        "text": "mode (manual, automatic, professional), weather_effects and weather_effect_minutes."
+        "text": "mode (manual, automatic, professional), profile, weather_effects and weather_effect_minutes."
       },
       {
         "icon": "gesture-tap-button",
         "title": "Buttons and switch",
-        "text": "identify, sync_clock and reconnect. hold_state switches restoring the desired state on and off."
+        "text": "identify, sync_clock, save_profile and reconnect. hold_state switches restoring the desired state on and off."
       },
       {
         "icon": "information-outline",

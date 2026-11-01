@@ -1,4 +1,4 @@
-"""Modus der Lampe: manuell (Home Assistant steuert), Automatik oder Profi (Programm der Lampe)."""
+"""Modus der Lampe (manuell, Automatik, Profi) und gespeicherte Profile (Profi-Programme)."""
 
 from __future__ import annotations
 
@@ -21,6 +21,7 @@ async def async_setup_entry(
         [
             FluvalMode(entry.runtime_data, "mode", "mode"),
             WeatherEffects(entry.runtime_data, "weather_effects", "weather_effects"),
+            FluvalProfile(entry.runtime_data, "profile", "profile"),
         ]
     )
 
@@ -58,3 +59,21 @@ class WeatherEffects(FluvalEntity, SelectEntity):
 
     async def async_select_option(self, option: str) -> None:
         self.coordinator.set_weather_fx(mode=option)
+
+
+class FluvalProfile(FluvalEntity, SelectEntity):
+    """Saved profiles: picking one writes it as the professional program and switches to mode professional."""
+
+    _platform = "select"
+
+    @property
+    def options(self) -> list[str]:
+        return [p.name for p in self.coordinator.profiles]
+
+    @property
+    def current_option(self) -> str | None:
+        """The profile that matches the program in the lamp (None if the lamp holds another program)."""
+        return self.coordinator.active_profile()
+
+    async def async_select_option(self, option: str) -> None:
+        await self.coordinator.async_apply_profile(option)

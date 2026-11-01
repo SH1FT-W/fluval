@@ -36,6 +36,9 @@
       },
       "weather_effects": {
         "default": "mdi:weather-lightning"
+      },
+      "profile": {
+        "default": "mdi:playlist-star"
       }
     },
     "switch": {
@@ -52,6 +55,9 @@
       },
       "reconnect": {
         "default": "mdi:bluetooth-connect"
+      },
+      "save_profile": {
+        "default": "mdi:content-save-plus-outline"
       }
     },
     "binary_sensor": {

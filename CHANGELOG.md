@@ -1,5 +1,16 @@
 # Changelog
 
+## 26.11.1 – 01.11.2026
+
+- **Profiles:** save professional programs as named profiles in Home Assistant and switch between them.
+  The FluvalConnect app keeps its profiles on the phone and the lamp only stores the active program, so the app's
+  list cannot be read. New button `save_profile` saves the program the lamp holds right now (pick a profile in the
+  app, press the button); new select `profile` writes a saved profile into the lamp and switches to professional.
+  Up to 20 profiles, kept in the entry options.
+- Options: once profiles exist, the options open a menu: settings, or rename/delete a profile.
+- Reef Nano 4.0: no change to existing unique IDs, entity IDs or behaviour.
+- Going back to 26.10.4 keeps the profiles in the entry, but saving the options there removes them.
+
 ## 26.10.4 – 22.10.2026
 
 - **Fix:** after a long outage (lamp unreachable for many polls in a row) the retry backoff overflowed

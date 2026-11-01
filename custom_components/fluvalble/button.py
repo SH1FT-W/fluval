@@ -1,4 +1,4 @@
-"""Knöpfe: Lampe blinken lassen, Uhr stellen, neu verbinden."""
+"""Knöpfe: Lampe blinken lassen, Uhr stellen, neu verbinden, Profi-Programm als Profil speichern."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ PARALLEL_UPDATES = 0
 
 @dataclass(frozen=True, kw_only=True)
 class FluvalButtonDescription(ButtonEntityDescription):
-    press: Callable[[FluvalCoordinator], Awaitable[None]]
+    press: Callable[[FluvalCoordinator], Awaitable[object]]
     always_available: bool = False
 
 
@@ -32,6 +32,9 @@ BUTTONS = (
     ),
     FluvalButtonDescription(
         key="sync_clock", entity_category=EntityCategory.CONFIG, press=lambda c: c.async_sync_clock()
+    ),
+    FluvalButtonDescription(
+        key="save_profile", entity_category=EntityCategory.CONFIG, press=lambda c: c.async_save_profile()
     ),
     FluvalButtonDescription(
         key="reconnect",

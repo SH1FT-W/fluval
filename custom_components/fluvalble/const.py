@@ -13,6 +13,9 @@ CONF_PRODUCT_ID: Final = "product_id"
 CONF_KEEP_CONNECTED: Final = "keep_connected"
 CONF_WEATHER: Final = "weather_entity"
 CONF_PREFERRED_PROXY: Final = "preferred_proxy"
+CONF_PROFILES: Final = "profiles"
+PROFILES_MAX: Final = 20
+PROFILE_NAME_MAX: Final = 100
 PROXY_AUTO: Final = "auto"
 DEFAULT_KEEP_CONNECTED: Final = True
 

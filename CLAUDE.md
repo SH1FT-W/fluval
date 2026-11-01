@@ -31,9 +31,18 @@ Entity-IDs, Verlauf, Gerät, Automationen und Skripte bleiben. Für 547 darf sic
   sonst aus der Werbung (Firmen-ID FFFF/FF01, ID an Stelle 8–9), sonst 547.
 - `light.py` RGB über Spektraldaten des Modells (`color.py`), Effekte als snake_case-Schlüssel (alte Namen werden angenommen).
 - unique_ids `<MAC ohne Doppelpunkte>_<key>`: light, channel_1…5, mode, identify, sync_clock, connection (binary_sensor
-  …_reachable), rssi, last_seen, active_connection_source; neu: hold_state, reconnect, timed_effects.
+  …_reachable), rssi, last_seen, active_connection_source; neu: hold_state, reconnect, timed_effects, profile (select), save_profile (button).
   Weggefallen: connection_mode. Neue Entity-IDs übernehmen das Präfix des Lichts (`entity.py`, `_object_prefix`).
 - Eintrag Version 2.2 (alt 2.1 → Optionen auf `keep_connected` migriert).
+- `profiles.py` Profile = gespeicherte Profi-Programme in der Option `profiles` (`[{name, points: [[min, c1…c5]]}]`,
+  max. 20). Die App hält ihre Profile auf dem Handy, die Lampe nur das aktive Programm (Schlüssel 13) → nicht auslesbar.
+  Knopf `save_profile` liest Schlüssel 13 und speichert (ohne Neuladen), Auswahl `profile` schreibt per
+  `async_set_pro_program` + Modus Profi und zeigt das Profil nur, wenn Modus Profi und die Punkte zur Lampe passen.
+  Speichern dekodiert Schlüssel 13 aus dem Rückgabewert von `link.status()` (nicht `state`, das behält Altes), prüft
+  per `pro_blob` und liest die Liste erst nach dem letzten `await`. `active_profile` dekodiert `state.raw[13]`.
+  Namen max. 100 Zeichen; Grenze 20 Profile nur beim Knopf. Nicht lesbare Einträge fallen beim nächsten Speichern weg.
+  Options-Dialog: mit Profilen erst Menü (settings / profiles → profile: umbenennen, löschen), ohne direkt `settings`.
+- HA-Annahmen: `docs/ha-annahmen.md` mitpflegen.
 - Logo: `brand/` aus der offiziellen SVG von fluvalaquatics.com (`assets/fluval-logo.svg`), mit chrome-headless-shell
   gerendert (Icon = nur das runde Zeichen).
 
