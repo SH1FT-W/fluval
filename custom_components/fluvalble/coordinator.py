@@ -197,9 +197,8 @@ class FluvalCoordinator(DataUpdateCoordinator[LampState]):
         self.hold = bool(stored.get("hold", True))
         self.weather_fx = str(stored.get("weather_fx", WEATHER_FX_OFF))
         self.weather_fx_minutes = int(stored.get("weather_fx_minutes", 10))
-        raw_profiles = self.config_entry.options.get(CONF_PROFILES)
-        if skipped := (len(raw_profiles) if isinstance(raw_profiles, list) else 0) - len(self.profiles):
-            # Broken entries are left out (and disappear with the next save); say so once instead of silently.
+        if skipped := len(profile_store.unreadable(self.config_entry.options)):
+            # Not shown, but kept in the options as they are (profile_store.dump); say so instead of silently.
             self.note(f"{skipped} ungültige Profile in den Optionen übersprungen", logging.WARNING)
         if weather := self.config_entry.options.get(CONF_WEATHER):
             self.config_entry.async_on_unload(async_track_state_change_event(self.hass, weather, self._weather_event))
@@ -690,7 +689,10 @@ class FluvalCoordinator(DataUpdateCoordinator[LampState]):
         profile = profile_store.Profile(name, current)
         self.hass.config_entries.async_update_entry(
             self.config_entry,
-            options={**self.config_entry.options, CONF_PROFILES: profile_store.dump([*saved, profile])},
+            options={
+                **self.config_entry.options,
+                CONF_PROFILES: profile_store.dump([*saved, profile], self.config_entry.options),
+            },
         )
         self.note(f"Profil „{name}“ gespeichert: {len(profile.points)} Stützpunkte")
         self.async_update_listeners()

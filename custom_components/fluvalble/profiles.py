@@ -61,8 +61,23 @@ def load(options: Mapping[str, Any]) -> list[Profile]:
     return result
 
 
-def dump(profiles: Iterable[Profile]) -> list[dict[str, Any]]:
-    return [p.as_option() for p in profiles]
+def unreadable(options: Mapping[str, Any]) -> list[Any]:
+    """Raw entries that `load` leaves out (broken, duplicate name, other format): kept as they are when saving."""
+    raw = options.get(CONF_PROFILES)
+    kept: set[str] = set()
+    result = []
+    for item in raw if isinstance(raw, list) else []:
+        profile = _profile(item)
+        if profile is None or profile.name in kept:
+            result.append(item)
+        else:
+            kept.add(profile.name)
+    return result
+
+
+def dump(profiles: Iterable[Profile], options: Mapping[str, Any]) -> list[Any]:
+    """New value of the option: the given profiles plus the unreadable raw entries of `options`, never lost."""
+    return [*(p.as_option() for p in profiles), *unreadable(options)]
 
 
 def describe(profile: Profile) -> str:

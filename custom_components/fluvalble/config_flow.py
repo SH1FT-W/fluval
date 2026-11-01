@@ -135,10 +135,10 @@ class FluvalOptionsFlow(OptionsFlowWithReload):
         return await self.async_step_settings()
 
     def _save(self, settings: dict[str, Any], profiles: list[profile_store.Profile]) -> ConfigFlowResult:
-        """Options = settings plus the profiles (left out when there are none)."""
+        """Options = settings plus the profiles and unreadable raw entries (key left out when there are none)."""
         data = dict(settings)
-        if profiles:
-            data[CONF_PROFILES] = profile_store.dump(profiles)
+        if raw := profile_store.dump(profiles, self.config_entry.options):
+            data[CONF_PROFILES] = raw
         return self.async_create_entry(data=data)
 
     def _settings(self) -> dict[str, Any]:

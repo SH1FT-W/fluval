@@ -316,3 +316,26 @@ async def test_options_profiles_emptied_meanwhile(hass: HomeAssistant, loaded):
 async def test_broken_profiles_logged_on_start(hass: HomeAssistant, loaded):
     assert [p.name for p in loaded.runtime_data.profiles] == ["Gut"]
     assert any("1 ungültige" in line for line in loaded.runtime_data.stats.log)
+
+
+FUTURE = {"name": "Zukunft", "points": [[600, 1, 2, 3, 4, 5, 6]]}  # e.g. written by a later version
+
+
+@pytest.mark.parametrize("loaded", [{"profiles": [{"name": "Gut", "points": OTHER_POINTS}, FUTURE]}], indirect=True)
+async def test_unreadable_entries_survive_saving(hass: HomeAssistant, loaded):
+    await press(hass)
+    assert list(saved(loaded)) == ["Gut", "Profil 2", "Zukunft"]
+    assert loaded.options["profiles"][-1] == FUTURE
+    result = await open_profile(hass, loaded, "Gut")
+    result = await hass.config_entries.options.async_configure(result["flow_id"], {"name": "Gut", "delete": True})
+    await hass.async_block_till_done()
+    assert list(saved(loaded)) == ["Profil 2", "Zukunft"]
+
+
+@pytest.mark.parametrize("loaded", [{"profiles": [FUTURE]}], indirect=True)
+async def test_only_unreadable_entries_kept_by_settings(hass: HomeAssistant, loaded):
+    result = await hass.config_entries.options.async_init(loaded.entry_id)
+    assert result["step_id"] == "settings"
+    result = await hass.config_entries.options.async_configure(result["flow_id"], {"keep_connected": False})
+    await hass.async_block_till_done()
+    assert loaded.options["profiles"] == [FUTURE]

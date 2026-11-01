@@ -40,7 +40,7 @@ Entity-IDs, Verlauf, Gerät, Automationen und Skripte bleiben. Für 547 darf sic
   `async_set_pro_program` + Modus Profi und zeigt das Profil nur, wenn Modus Profi und die Punkte zur Lampe passen.
   Speichern dekodiert Schlüssel 13 aus dem Rückgabewert von `link.status()` (nicht `state`, das behält Altes), prüft
   per `pro_blob` und liest die Liste erst nach dem letzten `await`. `active_profile` dekodiert `state.raw[13]`.
-  Namen max. 100 Zeichen; Grenze 20 Profile nur beim Knopf. Nicht lesbare Einträge fallen beim nächsten Speichern weg.
+  Namen max. 100 Zeichen; Grenze 20 Profile nur beim Knopf. Nicht lesbare Einträge bleiben beim Speichern unverändert erhalten (`unreadable`).
   Options-Dialog: mit Profilen erst Menü (settings / profiles → profile: umbenennen, löschen), ohne direkt `settings`.
 - HA-Annahmen: `docs/ha-annahmen.md` mitpflegen.
 - Logo: `brand/` aus der offiziellen SVG von fluvalaquatics.com (`assets/fluval-logo.svg`), mit chrome-headless-shell
