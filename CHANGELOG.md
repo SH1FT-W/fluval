@@ -1,5 +1,16 @@
 # Changelog
 
+## 26.11.2 – 02.11.2026
+
+- **Fix:** a weather effect (storm, clouds) that was running when Home Assistant restarted never ended: it was saved
+  as a lasting wish, its timer was lost, and "hold state" brought the lightning back again and again. The effect is
+  no longer saved as the lasting state; its end time is kept, so after a restart it runs for the time left and then
+  returns to the previous mix. Turned off or switched to another mode while it runs, the light stays that way when
+  the effect ends; an effect the lamp did not take is not kept either.
+- **Fix:** unloading the integration while a connection was being set up could leave the connection open on the
+  Bluetooth proxy (lamp busy until the proxy restarts). A connection that completes after the stop is now closed,
+  and reconnects or idle disconnects started in the background are finished before unloading completes.
+
 ## 26.11.1 – 01.11.2026
 
 - **Profiles:** save professional programs as named profiles in Home Assistant and switch between them.

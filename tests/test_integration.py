@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from datetime import timedelta
 from unittest.mock import patch
 
@@ -13,7 +14,7 @@ from homeassistant.helpers import device_registry as dr, entity_registry as er, 
 import pytest
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
 
-from custom_components.fluvalble.ble import NotInRange
+from custom_components.fluvalble.ble import FluvalError, NotInRange
 from custom_components.fluvalble.const import DOMAIN, POLL_MAX
 from custom_components.fluvalble.diagnostics import async_get_config_entry_diagnostics
 
@@ -261,6 +262,36 @@ async def test_slow_connect_is_not_cancelled(hass: HomeAssistant, prod, lamp: Fa
     with patch("custom_components.fluvalble.ble.OPERATION_TIMEOUT", 0.1):
         await set_value(hass, "blue", 50)
     assert lamp.channels[2] == 50 and link.connected
+
+
+async def test_stop_during_connect_leaves_no_connection(hass: HomeAssistant, prod, lamp: FakeLamp):
+    """stop() while a connect is still running: the connection made afterwards is closed, not kept."""
+    link = prod.runtime_data.link
+    await link.disconnect()
+    lamp.connect_delay = 0.2
+    task = hass.async_create_task(link.status())
+    await asyncio.sleep(0.05)  # connecting via the proxy
+    await link.stop()
+    with pytest.raises(FluvalError):
+        await task
+    assert lamp.connects == 2  # the connect did finish ...
+    assert lamp.client is None and not link.connected  # ... and was closed again
+
+
+async def test_unload_waits_for_refresh_started_by_advertisement(hass: HomeAssistant, prod, lamp: FakeLamp):
+    """Work started from callbacks belongs to the entry: unloading waits for it, nothing connects afterwards."""
+    c = prod.runtime_data
+    await c.link.disconnect()
+    await hass.async_block_till_done()
+    lamp.connect_delay = 0.2
+    c._on_advertisement(type("Info", (), {"rssi": -64, "source": "02:00:00:00:00:A1"})(), None)
+    await asyncio.sleep(0.05)  # connecting via the proxy
+    await hass.config_entries.async_unload(prod.entry_id)
+    connects = lamp.connects
+    await asyncio.sleep(0.3)
+    await hass.async_block_till_done()
+    assert lamp.connects == connects  # nothing left running after the unload
+    assert lamp.client is None
 
 
 async def test_queue_wait_is_limited(hass: HomeAssistant, prod, lamp: FakeLamp):
@@ -831,3 +862,143 @@ async def test_slider_leaves_pro_mode_from_shown_levels(
     await hass.services.async_call("number", "set_value", {"entity_id": NUM["blue"], "value": 50}, blocking=True)
     assert lamp.mode == 0 and lamp.channels == [0, 20, 50, 0, 0]
     assert hass.states.get(NUM["cyan"]).state == "20"
+
+
+async def test_weather_effect_ends_after_restart(hass: HomeAssistant, prod, lamp: FakeLamp, freezer):
+    """A weather effect is temporary: a restart while it runs must not turn it into a lasting wish."""
+    hass.states.async_set("weather.station", "cloudy", {})
+    result = await hass.config_entries.options.async_init(prod.entry_id)
+    await hass.config_entries.options.async_configure(
+        result["flow_id"], {"keep_connected": True, "weather_entity": "weather.station"}
+    )
+    await hass.async_block_till_done()
+    await call(hass, "select", "select_option", f"select.{P}_weather_effects", option="storm")
+    await call(hass, "number", "set_value", f"number.{P}_weather_effect_minutes", value=5)
+    hass.states.async_set("weather.station", "lightning", {})
+    await hass.async_block_till_done()
+    assert lamp.effect == 1
+    await tick(hass, freezer, 60)
+    # Home Assistant restarts while the storm effect runs (4 of 5 minutes left).
+    await hass.config_entries.async_unload(prod.entry_id)
+    await tick(hass, freezer, 5)
+    assert await hass.config_entries.async_setup(prod.entry_id)
+    await hass.async_block_till_done()
+    await tick(hass, freezer, 30)
+    assert lamp.effect == 1  # still within its time
+    await tick(hass, freezer, 4 * 60)
+    assert lamp.effect == 0 and lamp.channels == [22, 77, 100, 66, 44]  # ended, back to the mix
+    # Power cut later: "hold state" brings back the mix, never the lightning.
+    lamp.effect = 1
+    await tick(hass, freezer, 120)
+    assert lamp.effect == 0
+
+
+async def test_weather_effect_expired_during_restart(hass: HomeAssistant, prod, lamp: FakeLamp, freezer):
+    """Home Assistant was down longer than the effect: it ends right after the start."""
+    hass.states.async_set("weather.station", "cloudy", {})
+    result = await hass.config_entries.options.async_init(prod.entry_id)
+    await hass.config_entries.options.async_configure(
+        result["flow_id"], {"keep_connected": True, "weather_entity": "weather.station"}
+    )
+    await hass.async_block_till_done()
+    await call(hass, "select", "select_option", f"select.{P}_weather_effects", option="storm")
+    hass.states.async_set("weather.station", "lightning", {})
+    await hass.async_block_till_done()
+    assert lamp.effect == 1
+    await hass.config_entries.async_unload(prod.entry_id)
+    await tick(hass, freezer, 3600)
+    assert await hass.config_entries.async_setup(prod.entry_id)
+    await hass.async_block_till_done()
+    await tick(hass, freezer, 30)
+    assert lamp.effect == 0 and lamp.channels == [22, 77, 100, 66, 44]
+
+
+async def test_stored_weather_effect_unreadable_is_ignored(hass: HomeAssistant, prod):
+    c = prod.runtime_data
+    for running in (
+        {"effect": 1, "until": "soon"},
+        {"effect": 99, "until": "2030-01-01T00:00:00+00:00"},
+        {"effect": True, "until": "2030-01-01T00:00:00+00:00"},
+        {"effect": 1, "until": "2030-01-01T00:00:00"},  # no time zone
+        {"effect": 1, "until": "2030-02-30T00:00:00+00:00"},  # no such day
+        "x",
+    ):
+        c._resume_weather_effect(running)
+    assert c._fx_effect == 0 and c._fx_cancel is None
+
+
+async def _storm(hass: HomeAssistant, prod) -> None:
+    hass.states.async_set("weather.station", "cloudy", {})
+    result = await hass.config_entries.options.async_init(prod.entry_id)
+    await hass.config_entries.options.async_configure(
+        result["flow_id"], {"keep_connected": True, "weather_entity": "weather.station"}
+    )
+    await hass.async_block_till_done()
+    await call(hass, "select", "select_option", f"select.{P}_weather_effects", option="storm")
+    await call(hass, "number", "set_value", f"number.{P}_weather_effect_minutes", value=5)
+
+
+async def test_weather_effect_not_taken_is_not_kept(hass: HomeAssistant, prod, lamp: FakeLamp, freezer):
+    """The lamp does not take the weather effect: it must not stay behind as a lasting wish for "hold state"."""
+    await _storm(hass, prod)
+    lamp.ignore = 2
+    hass.states.async_set("weather.station", "lightning", {})
+    await hass.async_block_till_done()
+    assert lamp.effect == 0
+    assert prod.runtime_data.desired.effect == 0
+    await tick(hass, freezer, 120)
+    assert lamp.effect == 0
+
+
+async def test_weather_effect_end_keeps_light_off(hass: HomeAssistant, prod, lamp: FakeLamp, freezer):
+    """Turned off during the weather effect: its end must not switch the light back on."""
+    await _storm(hass, prod)
+    hass.states.async_set("weather.station", "lightning", {})
+    await hass.async_block_till_done()
+    assert lamp.effect == 1
+    await call(hass, "light", "turn_off", LIGHT)
+    await tick(hass, freezer, 5 * 60 + 1)
+    assert lamp.power is False
+    assert prod.runtime_data.desired.effect == 0  # no leftover that "hold state" would bring back later
+
+
+async def test_weather_effect_end_after_mode_change(hass: HomeAssistant, prod, lamp: FakeLamp, freezer):
+    """Switched to automatic during the weather effect: its end leaves the mode alone."""
+    await _storm(hass, prod)
+    hass.states.async_set("weather.station", "lightning", {})
+    await hass.async_block_till_done()
+    await call(hass, "select", "select_option", MODE, option="automatic")
+    mode = lamp.mode
+    await tick(hass, freezer, 5 * 60 + 1)
+    assert lamp.mode == mode != 0
+    assert prod.runtime_data.desired.effect == 0
+
+
+async def test_weather_start_failure_keeps_user_change(hass: HomeAssistant, prod, lamp: FakeLamp):
+    """A failed weather start only takes back its own effect, not a mode the user chose meanwhile."""
+    from custom_components.fluvalble.coordinator import FluvalCoordinator
+
+    async def fail(self, effect: int) -> None:
+        self.desired.mode, self.desired.power, self.desired.effect = "manual", True, effect
+        self.desired.mode = "professional"  # the user picks a mode while the weather command waits
+        raise HomeAssistantError("not confirmed")
+
+    await _storm(hass, prod)  # reloads the entry: new coordinator
+    c = prod.runtime_data
+    with patch.object(FluvalCoordinator, "async_set_effect", fail):
+        hass.states.async_set("weather.station", "lightning", {})
+        await hass.async_block_till_done()
+    assert c.desired.mode == "professional" and c.desired.effect == 0
+
+
+async def test_stored_weather_effect_out_of_range(hass: HomeAssistant, prod):
+    """Absurd end times never break the start and never make the effect last longer than its minutes."""
+    from homeassistant.util import dt as dt_util
+
+    c = prod.runtime_data
+    c._resume_weather_effect({"effect": 1, "until": "0001-01-01T00:00:00+00:00"})
+    assert c._fx_until is not None and c._fx_until <= dt_util.utcnow()
+    c._fx_cancel()
+    c._resume_weather_effect({"effect": 1, "until": "9999-12-31T23:59:59+00:00"})
+    assert c._fx_until <= dt_util.utcnow() + timedelta(minutes=c.weather_fx_minutes)
+    c._fx_cancel()

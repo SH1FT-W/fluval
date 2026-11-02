@@ -159,6 +159,7 @@ class FluvalCoordinator(DataUpdateCoordinator[LampState]):
         self.weather_fx_minutes = 10
         self._fx_cancel: CALLBACK_TYPE | None = None
         self._fx_effect = 0  # Effekt, den das Wetter gerade gestartet hat
+        self._fx_until: datetime | None = None  # when the running weather effect ends (kept across restarts)
         self._fx_last: datetime | None = None
         self.hold = True
         self.stats = Stats()
@@ -197,6 +198,7 @@ class FluvalCoordinator(DataUpdateCoordinator[LampState]):
         self.hold = bool(stored.get("hold", True))
         self.weather_fx = str(stored.get("weather_fx", WEATHER_FX_OFF))
         self.weather_fx_minutes = int(stored.get("weather_fx_minutes", 10))
+        self._resume_weather_effect(stored.get("weather_fx_running"))
         if skipped := len(profile_store.unreadable(self.config_entry.options)):
             # Not shown, but kept in the options as they are (profile_store.dump); say so instead of silently.
             self.note(f"{skipped} ungültige Profile in den Optionen übersprungen", logging.WARNING)
@@ -237,11 +239,19 @@ class FluvalCoordinator(DataUpdateCoordinator[LampState]):
         self._store.async_delay_save(self._snapshot, 2)
 
     def _snapshot(self) -> dict[str, Any]:
+        desired = self.desired.as_dict()
+        running = None
+        if self._weather_effect_running and self._fx_until is not None:
+            # A weather effect is temporary: the lasting wish is what was set before it. Its end time is
+            # stored separately, so a restart resumes the effect for the time left and then ends it.
+            desired["effect"] = 0
+            running = {"effect": self._fx_effect, "until": self._fx_until.isoformat()}
         return {
-            "desired": self.desired.as_dict(),
+            "desired": desired,
             "hold": self.hold,
             "weather_fx": self.weather_fx,
             "weather_fx_minutes": self.weather_fx_minutes,
+            "weather_fx_running": running,
         }
 
     def note(self, text: str, level: int = logging.INFO) -> None:
@@ -366,7 +376,9 @@ class FluvalCoordinator(DataUpdateCoordinator[LampState]):
     def _reconnect(self, _now: datetime) -> None:
         self._reconnect_unsub = None
         if not self._stopping and not self.link.connected:
-            self.hass.async_create_task(self.async_request_refresh())
+            # Bound to the entry: unloading waits for it instead of leaving it running (not cancelled, as
+            # aborting a connect leaves an orphaned proxy connection).
+            self.config_entry.async_create_task(self.hass, self.async_request_refresh(), f"{DOMAIN} reconnect")
 
     @callback
     def _on_advertisement(self, info: bluetooth.BluetoothServiceInfoBleak, _change: bluetooth.BluetoothChange) -> None:
@@ -374,7 +386,7 @@ class FluvalCoordinator(DataUpdateCoordinator[LampState]):
         self.rssi, self.advert_source = info.rssi, info.source
         if self.keep_connected and not self.link.connected and not self.link.busy and not self._stopping:
             # Die Lampe wirbt nur, wenn niemand verbunden ist – also ist sie gerade frei.
-            self.hass.async_create_task(self.async_request_refresh())
+            self.config_entry.async_create_task(self.hass, self.async_request_refresh(), f"{DOMAIN} connect")
         # Werbepakete kommen im Sekundentakt: Entitäten nur bei sichtbarer Änderung schreiben (anderer Proxy oder
         # RSSI um mehr als RSSI_STEP); der aktuelle Wert geht mit der nächsten Abfrage ohnehin mit.
         if previous[0] is None or previous[1] != info.source or abs(info.rssi - previous[0]) > RSSI_STEP:
@@ -397,7 +409,7 @@ class FluvalCoordinator(DataUpdateCoordinator[LampState]):
         def idle(_now: datetime) -> None:
             self._idle_unsub = None
             if not self.link.busy:
-                self.hass.async_create_task(self.link.disconnect())
+                self.config_entry.async_create_task(self.hass, self.link.disconnect(), f"{DOMAIN} idle disconnect")
 
         self._idle_unsub = async_call_later(self.hass, IDLE_DISCONNECT, idle)
 
@@ -737,27 +749,71 @@ class FluvalCoordinator(DataUpdateCoordinator[LampState]):
             return
         self._fx_last = now
         self._fx_effect = effect
+        self._fx_until = now + timedelta(minutes=self.weather_fx_minutes)
         self.config_entry.async_create_background_task(
             self.hass, self._weather_start(effect), f"{DOMAIN} Wetter-Effekt"
         )
 
+    @property
+    def _weather_effect_running(self) -> bool:
+        """The effect HA wants right now is the one the weather started (nobody chose something else since)."""
+        return bool(self._fx_effect) and self.desired.effect == self._fx_effect
+
+    def _resume_weather_effect(self, running: Any) -> None:
+        """After a restart: keep the stored weather effect for the time left, then end it as usual."""
+        if not isinstance(running, dict):
+            return
+        try:
+            until = dt_util.parse_datetime(str(running.get("until") or ""))
+        except ValueError:  # well-formed but impossible date
+            return
+        effect = running.get("effect")
+        if (
+            until is None
+            or until.tzinfo is None
+            or not isinstance(effect, int)
+            or isinstance(effect, bool)
+            or effect not in protocol.EFFECT_NAMES
+        ):
+            return
+        now = dt_util.utcnow()
+        # Never longer than a fresh effect would run (corrupt or far-future end times).
+        until = min(until, now + timedelta(minutes=self.weather_fx_minutes))
+        self.desired.effect = self._fx_effect = effect
+        self._fx_until = until
+        self._fx_last = now  # once per hour, counted from the restart
+        delay = max(0.0, (until - now).total_seconds())
+        self._fx_cancel = async_call_later(self.hass, delay, self._weather_end)
+
     async def _weather_start(self, effect: int) -> None:
+        before = self.desired.effect
         try:
             await self.async_set_effect(effect)
         except HomeAssistantError as err:
-            self._fx_effect = 0
+            self._fx_effect, self._fx_until = 0, None
+            if self.desired.effect == effect:
+                # Not taken: forget it, or "hold state" would keep restoring it with no end. Only the effect:
+                # mode or power may have been changed by the user meanwhile.
+                self.desired.effect = before
+                self._save()
             _LOGGER.warning("%s: Wetter-Effekt nicht gestartet: %s", self.name, err)
             return
         self.note(f"Wetter-Effekt {protocol.EFFECT_NAMES.get(effect)} für {self.weather_fx_minutes} Minuten")
-        self._fx_cancel = async_call_later(self.hass, self.weather_fx_minutes * 60, self._weather_end)
+        assert self._fx_until is not None
+        delay = max(0.0, (self._fx_until - dt_util.utcnow()).total_seconds())
+        self._fx_cancel = async_call_later(self.hass, delay, self._weather_end)
 
     @callback
     def _weather_end(self, _now: datetime) -> None:
-        effect, self._fx_effect, self._fx_cancel = self._fx_effect, 0, None
-        if effect and self.desired.effect == effect:  # nur beenden, wenn niemand inzwischen etwas anderes wollte
-            self.config_entry.async_create_background_task(
-                self.hass, self._weather_stop(), f"{DOMAIN} Wetter-Effekt aus"
-            )
+        effect, self._fx_effect, self._fx_cancel, self._fx_until = self._fx_effect, 0, None, None
+        if not effect or self.desired.effect != effect:
+            return  # someone chose something else meanwhile
+        if self.desired.mode != MANUAL or not self.desired.power:
+            # Turned off or switched to another mode meanwhile: keep that, just drop the effect from the wish.
+            self.desired.effect = 0
+            self._save()
+            return
+        self.config_entry.async_create_background_task(self.hass, self._weather_stop(), f"{DOMAIN} Wetter-Effekt aus")
 
     async def _weather_stop(self) -> None:
         try:

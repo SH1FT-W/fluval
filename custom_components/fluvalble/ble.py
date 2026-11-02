@@ -191,6 +191,8 @@ class FluvalLink:
                 raise FluvalError("gestoppt")
             if not self.connected:
                 await self._connect()  # ohne äußere Zeitgrenze, siehe Modulbeschreibung
+                if self._stopped:  # stop() ran while connecting (it cannot wait for the lock)
+                    raise FluvalError("gestoppt")
             async with asyncio.timeout(OPERATION_TIMEOUT):
                 return await job()
         except FluvalError as err:
@@ -207,6 +209,9 @@ class FluvalLink:
             await self._drop()
             raise ConnectFailed(self.last_error) from err
         finally:
+            if self._stopped:
+                # A connection made after stop() would stay open on the proxy and block the lamp.
+                await self._drop()
             self._lock.release()
 
     def _failed(self, message: str) -> None:
