@@ -10,7 +10,7 @@ Robust, honest states, no cloud.</p>
 
 [![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSH1FT-W%2Ffluval%2Fmain%2Fcustom_components%2Ffluvalble%2Fmanifest.json&query=%24.version&label=version&style=flat-square&color=0A6FA8&labelColor=111111)](https://github.com/SH1FT-W/fluval/releases/latest)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.9%2B-0A6FA8?style=flat-square&labelColor=111111&logo=homeassistant&logoColor=white)](https://www.home-assistant.io)
-[![HACS](https://img.shields.io/badge/HACS-default-0A6FA8?style=flat-square&labelColor=111111)](https://hacs.xyz)
+[![Marketplace](https://img.shields.io/badge/Marketplace-default-0A6FA8?style=flat-square&labelColor=111111)](https://hacs.xyz)
 [![IoT class](https://img.shields.io/badge/iot-local%20push-0A6FA8?style=flat-square&labelColor=111111)](https://developers.home-assistant.io/docs/creating_integration_manifest/#iot-class)
 [![Quality scale](https://img.shields.io/badge/quality%20scale-self--assessed-0A6FA8?style=flat-square&labelColor=111111)](custom_components/fluvalble/quality_scale.yaml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-0A6FA8?style=flat-square&labelColor=111111)](LICENSE)
@@ -201,13 +201,15 @@ If a command fails (lamp not reachable, no confirmation, invalid windows or poin
 
 ## Installation
 
-### HACS
+### Marketplace
 
-Fluval is in the HACS default store.
+The Marketplace is under Settings → Marketplace. On Home Assistant before 2026.11 it is still called HACS.
 
-[![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SH1FT-W&repository=fluval&category=integration)
+Fluval is in the Marketplace.
 
-1. In HACS, search for **Fluval** (or click **Open in HACS** above), download it and restart Home Assistant.
+[![Open in the Marketplace](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SH1FT-W&repository=fluval&category=integration)
+
+1. In the Marketplace, search for **Fluval** (or click **Open in the Marketplace** above), download it and restart Home Assistant.
 
 ### Manual
 
@@ -232,7 +234,7 @@ Once profiles are saved, the options first ask whether to change these settings 
 
 ## Switching from MrMooreUK/fluvalble
 
-1. In HACS, remove "Fluval Aquarium LED" (this deletes the old folder, the integration entry stays).
+1. In the Marketplace, remove "Fluval Aquarium LED" (this deletes the old folder, the integration entry stays).
 2. Install this integration (see above) and restart Home Assistant.
 3. The existing entry is taken over: entity IDs, history, device, automations and scripts stay. Of the four old options, **Keep connected** remains (on if the old active time was 0 = permanent).
 
@@ -269,7 +271,7 @@ When you open an [issue](https://github.com/SH1FT-W/fluval/issues), please attac
 ## Removal
 
 1. **Settings > Devices & services > Fluval Aquarium LED > three dots > Delete.** The Bluetooth connection is closed; programs and timed effects stay stored in the lamp.
-2. Delete the folder `/config/custom_components/fluvalble` (or remove the repository in HACS) and restart Home Assistant.
+2. Delete the folder `/config/custom_components/fluvalble` (or remove the repository in the Marketplace) and restart Home Assistant.
 
 ## How it works
 
