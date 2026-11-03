@@ -10,7 +10,7 @@ Robust, honest states, no cloud.</p>
 
 [![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSH1FT-W%2Ffluval%2Fmain%2Fcustom_components%2Ffluvalble%2Fmanifest.json&query=%24.version&label=version&style=flat-square&color=0A6FA8&labelColor=111111)](https://github.com/SH1FT-W/fluval/releases/latest)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.9%2B-0A6FA8?style=flat-square&labelColor=111111&logo=homeassistant&logoColor=white)](https://www.home-assistant.io)
-[![HACS](https://img.shields.io/badge/HACS-custom%20repository-0A6FA8?style=flat-square&labelColor=111111)](https://hacs.xyz)
+[![HACS](https://img.shields.io/badge/HACS-default-0A6FA8?style=flat-square&labelColor=111111)](https://hacs.xyz)
 [![IoT class](https://img.shields.io/badge/iot-local%20push-0A6FA8?style=flat-square&labelColor=111111)](https://developers.home-assistant.io/docs/creating_integration_manifest/#iot-class)
 [![Quality scale](https://img.shields.io/badge/quality%20scale-self--assessed-0A6FA8?style=flat-square&labelColor=111111)](custom_components/fluvalble/quality_scale.yaml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-0A6FA8?style=flat-square&labelColor=111111)](LICENSE)
@@ -201,10 +201,13 @@ If a command fails (lamp not reachable, no confirmation, invalid windows or poin
 
 ## Installation
 
-### HACS (custom repository)
+### HACS
 
-1. In HACS, open the three dots menu, choose **Custom repositories** and add `https://github.com/SH1FT-W/fluval` with the type **Integration**.
-2. Search for **Fluval**, download it and restart Home Assistant.
+Fluval is in the HACS default store.
+
+[![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SH1FT-W&repository=fluval&category=integration)
+
+1. In HACS, search for **Fluval** (or click **Open in HACS** above), download it and restart Home Assistant.
 
 ### Manual
 
