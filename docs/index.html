@@ -13,21 +13,18 @@
 <meta property="og:description" content="Local Bluetooth control for Fluval Reef and Plant 4.0 LED lights. Robust, honest states, no cloud.">
 <meta property="og:image" content="https://sh1ft-w.github.io/fluval/images/readme-title-social.png">
 <link rel="icon" href="logo.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<!-- Shared SH1FT-W design (tokens, glass navigation, light/dark, DE/EN, reveal) -->
-<link rel="stylesheet" href="https://sh1ft-w.github.io/theme/v1/theme.css">
-<script src="https://sh1ft-w.github.io/theme/v1/theme.js"></script>
+<!-- Shared SH1FT-W design, version 2 (tokens, Archivo, navigation, light/dark, DE/EN, the lanes) -->
+<link rel="stylesheet" href="https://sh1ft-w.github.io/theme/v2/theme.css">
+<script src="https://sh1ft-w.github.io/theme/v2/theme.js"></script>
 <style>
 /* Fluval palette: Fluval blue as accent, light sky blue as second colour, clear water by day, deep reef by night */
 :root {
   --accent: #0A8FD0; --accent-ink: #0A6FA8; --on-accent: #ffffff;
-  --sea: #0A6FA8; --sea-tint: rgba(10,143,208,0.10); --sea-glow: rgba(10,111,168,0.30); --aqua: #2BB3E8;
+  --sea: #0A6FA8; --sea-tint: rgba(10,143,208,0.10); --aqua: #2BB3E8;
   --ch-1: #E25FA8; --ch-2: #22C3D6; --ch-3: #2F6FE0; --ch-4: #8A4FE0; --ch-5: #9AAAB4;
-  --font: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --display: "Archivo", "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font: "Archivo", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --display: "Archivo", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
   --bg: #F4F7F8; --bg-2: #E6EEF0; --card: #FFFFFF; --card-2: #F1F5F6;
   --ink: #0E1418; --ink-2: #4A5760; --ink-3: rgba(12,25,34,0.52);
   --line: rgba(10,40,60,0.11); --chip: rgba(10,50,80,0.06);
@@ -38,7 +35,7 @@
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --accent: #3FB3EC; --accent-ink: #6CC6F2; --on-accent: #041624;
-  --sea: #3FB3EC; --sea-tint: rgba(63,179,236,0.14); --sea-glow: rgba(63,179,236,0.28);
+  --sea: #3FB3EC; --sea-tint: rgba(63,179,236,0.14);
   --ch-5: #DCE6EC;
   --bg: #070C10; --bg-2: #0C151B; --card: #10191F; --card-2: #16232B;
   --ink: #ECF3F6; --ink-2: rgba(214,228,238,0.84); --ink-3: rgba(214,228,238,0.52);
@@ -48,7 +45,7 @@
 } }
 :root[data-theme="dark"] {
   --accent: #3FB3EC; --accent-ink: #6CC6F2; --on-accent: #041624;
-  --sea: #3FB3EC; --sea-tint: rgba(63,179,236,0.14); --sea-glow: rgba(63,179,236,0.28);
+  --sea: #3FB3EC; --sea-tint: rgba(63,179,236,0.14);
   --ch-5: #DCE6EC;
   --bg: #070C10; --bg-2: #0C151B; --card: #10191F; --card-2: #16232B;
   --ink: #ECF3F6; --ink-2: rgba(214,228,238,0.84); --ink-3: rgba(214,228,238,0.52);
@@ -74,7 +71,7 @@ code, .k { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 24px; border-radius: 999px;
   font-family: inherit; font-size: 15px; font-weight: 600; line-height: 1; background: var(--sea); color: var(--on-accent); border: 0; cursor: pointer;
-  box-shadow: 0 12px 28px -12px var(--sea-glow); transition: transform .2s ease, filter .2s ease;
+  transition: transform .2s ease, filter .2s ease;
 }
 .btn:hover { text-decoration: none; filter: brightness(1.1); transform: translateY(-1px); }
 .btn.ghost { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
@@ -98,9 +95,6 @@ section.tint { background: var(--bg-2); }
 
 /* Hero */
 .hero { padding: clamp(56px, 9vw, 112px) 0 clamp(64px, 8vw, 104px); text-align: center; overflow: hidden; }
-.hero .glow { position: absolute; inset: -20% -10% auto; height: 90%; pointer-events: none;
-  background: radial-gradient(40% 36% at 30% 30%, rgba(43,179,232,0.20), transparent 70%), radial-gradient(36% 34% at 72% 24%, rgba(10,111,168,0.16), transparent 70%);
-  filter: blur(50px); }
 .hero .wrap { position: relative; }
 .hero .lead { max-width: 660px; margin-left: auto; margin-right: auto; }
 .cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 34px; }
@@ -108,9 +102,6 @@ section.tint { background: var(--bg-2); }
 .pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: var(--card); box-shadow: var(--shadow); font-weight: 600; color: var(--ink-2); font-size: 13px; }
 .pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--aqua); display: inline-block; }
 
-/* Bühne: das README-Titelbild */
-.stage { position: relative; margin: clamp(48px, 7vw, 84px) auto 0; max-width: 1100px; }
-.stage .photo { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); }
 
 /* Bento: Gerade neu */
 .bento { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
@@ -239,6 +230,36 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
   .tbl td { border: 0; padding: 2px 0; }
   .tbl td:first-child { white-space: normal; }
 }
+
+/* ---- theme v2 ---- */
+:root { --display: var(--font); --lane-a: #0A6FA8; --lane-b: #2BB3E8; --radius: 20px; --radius-lg: 28px; --max: 1200px; }
+body { font-family: var(--font); }
+h1 { font-size: clamp(44px, 6vw, 84px); line-height: 1; font-weight: 800; font-stretch: 118%; font-style: italic; letter-spacing: -0.025em; }
+h2 { font-size: clamp(30px, 3.8vw, 48px); line-height: 1.08; font-weight: 750; font-stretch: 112%; letter-spacing: -0.02em; }
+h3 { font-stretch: 106%; }
+h1 em, h2 em { color: inherit !important; font-style: inherit; }
+.center { text-align: left; } .center .lead { margin-left: 0; margin-right: 0; }
+.head { max-width: 50em; }
+.flow { margin: 0; }
+.finale h2 { font-size: clamp(34px, 4.6vw, 60px); }
+.eyebrow { text-transform: none; letter-spacing: 0; font-size: 16px; font-weight: 650; margin-bottom: 12px; }
+.eyebrow::before { display: none; }
+.cap { text-align: left; }
+.btn { border-radius: 12px; box-shadow: none; }
+.btn.ghost { background: var(--chip); box-shadow: none; }
+.pill { box-shadow: none; background: var(--chip); border-radius: 8px; }
+.b, .tile, .panel, .prof, .tbl, .faq details, .flow .lane { box-shadow: none; border: 1px solid var(--line); }
+.b .tag, .tg, .tbl thead th { text-transform: none; letter-spacing: 0; font-size: 13px; }
+.b .tag, .tg, .days > span { border-radius: 6px; }
+.tile .ico { border-radius: 10px; }
+.hero { text-align: left; padding: clamp(48px, 7vw, 96px) 0 clamp(56px, 7vw, 96px); overflow: hidden; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); align-items: center; }
+.hero .mark { width: 64px; height: 64px; border-radius: 15px; margin-bottom: 26px; }
+.hero .lead { margin-left: 0; max-width: 34em; }
+.hero .cta, .hero .meta { justify-content: flex-start; }
+.hero .s-lanes { margin: 0 calc(-1 * var(--gutter) - 14vw) 0 clamp(32px, 4vw, 56px); }
+.s-track b { color: #fff; font: italic 800 clamp(20px, 2.5vw, 34px)/1 var(--font); font-stretch: 116%; letter-spacing: -0.015em; white-space: nowrap; }
+@media (max-width: 900px) { .hero .wrap { grid-template-columns: 1fr; } .hero .s-lanes { margin: 8px calc(-1 * var(--gutter) - 8vw) 0 44px; } }
 </style>
 </head>
 <body>
@@ -264,25 +285,24 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
 </div>
 
 <section class="hero" id="top">
-  <div class="glow" aria-hidden="true"></div>
   <div class="wrap">
-    <p class="eyebrow reveal"><span class="en">Fluval aquarium light in Home Assistant</span><span class="de">Fluval-Aquarienlicht in Home Assistant</span></p>
-    <h1 class="reveal d1"><span class="en">Your aquarium light,<br><em>fully local.</em></span><span class="de">Dein Aquarienlicht,<br><em>ganz lokal.</em></span></h1>
-    <p class="lead reveal d2"><span class="en">Fluval talks to Fluval Reef and Plant 4.0 LEDs over local Bluetooth: <strong>every channel as a slider, real transitions, the lamp's programs and effects</strong>, and it keeps the colour Home Assistant set. Robust, honest states, no cloud.</span><span class="de">Fluval spricht über lokales Bluetooth mit Fluval Reef- und Plant-4.0-LEDs: <strong>jeder Kanal als Schieberegler, echte Übergänge, Programme und Effekte der Lampe</strong>, und sie hält die Farbe, die Home Assistant eingestellt hat. Robust, ehrliche Zustände, ohne Cloud.</span></p>
-    <div class="cta reveal d3">
-      <a class="btn" href="#install"><span class="en">Install from the Marketplace</span><span class="de">Über den Marketplace installieren</span></a>
-      <a class="btn ghost" href="https://github.com/SH1FT-W/fluval#readme"><span class="en">Read the README</span><span class="de">Zur Anleitung</span></a>
+    <div>
+      <img class="mark" src="logo.png" alt="" width="64" height="64">
+      <h1><span class="en">Your aquarium light, fully local.</span><span class="de">Dein Aquarienlicht, ganz lokal.</span></h1>
+      <p class="lead reveal d2"><span class="en">Fluval talks to Fluval Reef and Plant 4.0 LEDs over local Bluetooth: <strong>every channel as a slider, real transitions, the lamp's programs and effects</strong>, and it keeps the colour Home Assistant set. Robust, honest states, no cloud.</span><span class="de">Fluval spricht über lokales Bluetooth mit Fluval Reef- und Plant-4.0-LEDs: <strong>jeder Kanal als Schieberegler, echte Übergänge, Programme und Effekte der Lampe</strong>, und sie hält die Farbe, die Home Assistant eingestellt hat. Robust, ehrliche Zustände, ohne Cloud.</span></p>
+      <div class="cta reveal d3">
+        <a class="btn" href="#install"><span class="en">Install from the Marketplace</span><span class="de">Über den Marketplace installieren</span></a>
+        <a class="btn ghost" href="https://github.com/SH1FT-W/fluval#readme"><span class="en">Read the README</span><span class="de">Zur Anleitung</span></a>
+      </div>
+      <p class="meta reveal d3">
+        <span class="pill"><i></i><span id="hl-version">Version 26.11.2</span></span>
+        <span class="en">Home Assistant 2026.9 or newer &middot; English and German &middot; Apache 2.0</span><span class="de">Home Assistant 2026.9 oder neuer &middot; Deutsch und Englisch &middot; Apache 2.0</span>
+      </p>
     </div>
-    <p class="meta reveal d3">
-      <span class="pill"><i></i><span id="hl-version">Version 26.11.2</span></span>
-      <span class="en">Home Assistant 2026.9 or newer &middot; English and German &middot; Apache 2.0</span><span class="de">Home Assistant 2026.9 oder neuer &middot; Deutsch und Englisch &middot; Apache 2.0</span>
-    </p>
-
-    <div class="stage reveal d3">
-      <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="images/readme-title-dark.webp">
-        <img class="photo" src="images/readme-title-light.webp" width="2560" height="1280" alt="Fluval: Your aquarium light, fully local.">
-      </picture>
+    <div class="s-lanes" aria-hidden="true">
+      <div class="s-lane"><div class="s-track"><b><span class="en">Local, no cloud</span><span class="de">Lokal, ohne Cloud</span></b></div></div>
+      <div class="s-lane"><div class="s-track"><b><span class="en">Every channel</span><span class="de">Jeder Kanal</span></b></div></div>
+      <div class="s-lane"><div class="s-track"><b><span class="en">Effects and modes</span><span class="de">Effekte und Modi</span></b></div></div>
     </div>
   </div>
 </section>

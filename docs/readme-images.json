@@ -1,5 +1,5 @@
 {
-  "$comment": "Content of the README pictures. Cards: node sh1ft-w.github.io/theme/v1/readme-images/render.mjs <this repo> cards. The README title image is docs/images/readme-title.webp, a finished AI-generated composition (free to use), used unchanged; the title block here is not used. The project page shows the same image in the hero. docs/images/stage-photo.jpg is the photo part of it, only referenced by the unused title block.",
+  "$comment": "Content of the README title. Render with sh1ft-w.github.io/theme/v2/readme-images (node render.mjs <this repo>): banner 1280 x 440 light and dark, social preview 1280 x 640. Used fields: title.name, title.line, title.lanes, title.logo, colors.*.bg/ink/ink2, colors.light.accent. The other fields are from the v1 title and no longer read.",
   "title": {
     "name": "Fluval",
     "eyebrow": "For Home Assistant",
@@ -33,7 +33,13 @@
       "left": 600,
       "top": 70
     },
-    "layout": "center"
+    "layout": "center",
+    "line": "Fluval Bluetooth lights, fully local.",
+    "lanes": [
+      "Local, no cloud",
+      "Every channel",
+      "Effects and modes"
+    ]
   },
   "colors": {
     "light": {

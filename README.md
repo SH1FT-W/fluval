@@ -2,14 +2,14 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-title-dark.webp" />
-  <img src="docs/images/readme-title-light.webp" alt="Fluval: Your aquarium light, fully local." />
+  <img src="docs/images/readme-title-light.webp" alt="Fluval: Fluval Bluetooth lights, fully local. Local, no cloud. Every channel. Effects and modes." />
 </picture>
 
 [![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSH1FT-W%2Ffluval%2Fmain%2Fcustom_components%2Ffluvalble%2Fmanifest.json&query=%24.version&label=version&style=flat-square&color=0A6FA8&labelColor=111111)](https://github.com/SH1FT-W/fluval/releases/latest)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.9%2B-0A6FA8?style=flat-square&labelColor=111111&logo=homeassistant&logoColor=white)](https://www.home-assistant.io)
 [![Marketplace](https://img.shields.io/badge/Marketplace-default-0A6FA8?style=flat-square&labelColor=111111)](https://hacs.xyz)
 
-<a href="https://sh1ft-w.github.io/fluval"><b>Website</b></a>&emsp;<a href="#supported-lights">Lights</a>&emsp;<a href="#install">Install</a>&emsp;<a href="#set-up">Set up</a>&emsp;<a href="#entities">Entities</a>&emsp;<a href="CHANGELOG.md">Changelog</a>
+<a href="https://sh1ft-w.github.io/fluval"><b>Website</b></a>&emsp;<a href="#get-started">Get started</a>&emsp;<a href="#supported-lights">Lights</a>&emsp;<a href="#entities">Entities</a>&emsp;<a href="CHANGELOG.md">Changelog</a>
 
 </div>
 
@@ -38,12 +38,19 @@ The untested lights speak the same protocol as the Reef Nano 4.0, are built from
 
 **New in 26.11:** save the lamp's professional program as named profiles and switch between them, and weather effects end properly after a restart. Every change is in the [changelog](CHANGELOG.md).
 
-<a id="install"></a>
-## Install
+<a id="get-started"></a><a id="install"></a><a id="set-up"></a>
+## Get started
 
 [![Open in the Marketplace](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SH1FT-W&repository=fluval&category=integration)
 
-Search for **Fluval** under **Settings > Marketplace** (called HACS before Home Assistant 2026.11), download it and restart Home Assistant.
+Before you start, you need Bluetooth in range of the light: a local adapter or ESPHome Bluetooth proxies with active connections. Close the FluvalConnect app, it would hold the only connection.
+
+1. **Install it.** Search for **Fluval** under **Settings > Marketplace** (called HACS before Home Assistant 2026.11), download it and restart Home Assistant.
+2. **Add the light.** It usually shows up under **Settings > Devices & services > Discovered**. If not, choose **Add integration > Fluval Aquarium LED** and pick the light.
+3. **Choose how to connect** under **three dots > Configure**. **Keep connected** (on by default) stays connected, is fast and holds the state; off, Home Assistant connects only briefly (every 5 minutes and for commands), so the app gets a turn. A **preferred proxy** is tried first; if it fails, another one is used and the preferred one again after 30 minutes.
+4. **Weather, if you like.** In the same options, pick a weather entity for effects from weather.
+
+The entry reloads when the options are saved. Once profiles exist, the options first ask whether to change settings or rename or delete a profile.
 
 <details>
 <summary>Install by hand</summary>
@@ -52,17 +59,6 @@ Search for **Fluval** under **Settings > Marketplace** (called HACS before Home 
 2. Copy `custom_components/fluvalble` into `/config/custom_components/` and restart Home Assistant.
 
 </details>
-
-<a id="set-up"></a>
-## Set up
-
-Before you start, you need Bluetooth in range of the light: a local adapter or ESPHome Bluetooth proxies with active connections. Close the FluvalConnect app, it would hold the only connection.
-
-1. **Add the light.** It usually shows up under **Settings > Devices & services > Discovered**. If not, choose **Add integration > Fluval Aquarium LED** and pick the light.
-2. **Choose how to connect** under **three dots > Configure**. **Keep connected** (on by default) stays connected, is fast and holds the state; off, Home Assistant connects only briefly (every 5 minutes and for commands), so the app gets a turn. A **preferred proxy** is tried first; if it fails, another one is used and the preferred one again after 30 minutes.
-3. **Weather, if you like.** In the same options, pick a weather entity for effects from weather.
-
-The entry reloads when the options are saved. Once profiles exist, the options first ask whether to change settings or rename or delete a profile.
 
 <a id="switching"></a>
 ### Switching from MrMooreUK/fluvalble
@@ -267,3 +263,11 @@ Test requirements: `pip install -r requirements_test.txt`. The simulated lamp ac
 [Apache License 2.0](LICENSE), Copyright 2026 SH1FT-W. The predecessor and third-party material in [`NOTICE`](NOTICE).
 
 <sub>Fluval (this integration) is an independent project, not affiliated with, endorsed or sponsored by Rolf C. Hagen Inc. Fluval is a trademark of Rolf C. Hagen Inc.</sub>
+
+<br/>
+
+<div align="center">
+<a href="https://sh1ft-w.github.io"><img src="https://sh1ft-w.github.io/readme/footer.png" width="640" alt="All SH1FT-W projects"></a>
+<br/>
+<sub>More open source for Home Assistant and the Mac at <a href="https://sh1ft-w.github.io">sh1ft-w.github.io</a></sub>
+</div>
