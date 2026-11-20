@@ -110,7 +110,9 @@ class FluvalLight(FluvalEntity, LightEntity):
             else:
                 await c.async_set_power(True)
             return
-        base = c.on_levels()
+        # Professional mode: start from what the program shows (like the sliders), not the old manual mix.
+        program = c.program_levels()
+        base = program if program is not None and any(program) else c.on_levels()
         if rgb is not None:
             current = max(base) * 2.55 if self.is_on else 255
             levels = rgb_to_levels(tuple(rgb), int(brightness if brightness is not None else current), c.product.xyz)
@@ -136,7 +138,7 @@ class FluvalLight(FluvalEntity, LightEntity):
                 translation_key="unknown_channel",
                 translation_placeholders={"channels": ", ".join(unknown), "valid": ", ".join(names)},
             )
-        levels = tuple(channels.get(name, value) for name, value in zip(names, c.levels, strict=True))
+        levels = tuple(channels.get(name, value) for name, value in zip(names, c.shown_levels, strict=True))
         await c.async_fade(levels, transition)  # type: ignore[arg-type]
 
     async def async_set_timed_effects(self, windows: list[dict[str, Any]]) -> None:

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- **Fix:** in mode `professional`, light commands started from the old manual mix instead of what the light shows.
+  Only brightness brightened the old mix, only a colour took the old mix's brightness, `set_channels` filled the
+  channels not named with old values, and a transition started from the old mix. They now start from what the
+  program shows right now, like the channel sliders already did.
+
 ## 26.11.3 – 05.11.2026
 
 - README and project page: new layout, shorter and easier to scan, with one table at the core.

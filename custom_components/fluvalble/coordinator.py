@@ -870,7 +870,7 @@ class FluvalCoordinator(DataUpdateCoordinator[LampState]):
     async def async_fade(self, target: Levels, seconds: float | None) -> None:
         """Weich überblenden: Schritte höchstens alle 2 s, der erste sofort (Fehler gehen an den Aufrufer)."""
         self._cancel_fade()
-        start = self.levels if self.state.power else OFF_LEVELS
+        start = self.shown_levels if self.state.power else OFF_LEVELS
         largest = max(abs(t - c) for t, c in zip(target, start, strict=True))
         if not seconds or seconds < FADE_MIN_GAP or largest <= 1:
             await self.async_set_levels(target, cancel_fade=False)

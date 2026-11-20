@@ -864,6 +864,43 @@ async def test_slider_leaves_pro_mode_from_shown_levels(
     assert hass.states.get(NUM["cyan"]).state == "20"
 
 
+@pytest.mark.parametrize(
+    ("domain", "service", "data", "expected"),
+    [
+        # only brightness: the mix the program shows, brighter (not the old manual mix)
+        ("light", "turn_on", {"brightness": 255}, [0, 67, 100, 0, 0]),
+        # only colour: the brightness shown (30 %) stays
+        ("light", "turn_on", {"rgb_color": [0, 0, 255]}, None),
+        # set_channels: channels not named keep the shown values, like the sliders
+        (DOMAIN, "set_channels", {"blue": 50}, [0, 20, 50, 0, 0]),
+        # transition: the first step lies between the shown mix and the target
+        ("light", "turn_on", {"brightness": 255, "transition": 4}, [0, 44, 65, 0, 0]),
+    ],
+)
+async def test_light_leaves_pro_mode_from_shown_levels(
+    hass: HomeAssistant, prod, lamp, freezer: FrozenDateTimeFactory, domain, service, data, expected
+):
+    """Light commands in professional mode start from what the light shows, like the sliders."""
+    await hass.config.async_set_time_zone("Europe/Berlin")
+    freezer.move_to("2030-10-07 07:30:00+00:00")  # 09:30 local: blue 30, cyan 20
+    await hass.services.async_call(
+        DOMAIN,
+        "set_pro_program",
+        {
+            "entity_id": LIGHT,
+            "points": [{"time": "09:00"}, {"time": "10:00", "blue": 60, "cyan": 40}, {"time": "19:00"}],
+        },
+        blocking=True,
+    )
+    assert hass.states.get(LIGHT).attributes["brightness"] == 76  # 30 %
+    await call(hass, domain, service, LIGHT, **data)
+    assert lamp.mode == 0
+    if expected is None:
+        assert max(lamp.channels) == 30
+    else:
+        assert lamp.channels == expected
+
+
 async def test_weather_effect_ends_after_restart(hass: HomeAssistant, prod, lamp: FakeLamp, freezer):
     """A weather effect is temporary: a restart while it runs must not turn it into a lasting wish."""
     hass.states.async_set("weather.station", "cloudy", {})
